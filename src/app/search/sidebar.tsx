@@ -9,15 +9,18 @@ import {
 import { ProjectFilter } from "@/components/filter/projects";
 import { Label } from "@/components/ui/label";
 import { NamespacesFilter } from "@/components/filter/namespaces";
+import Link from "next/link";
 
 export function SearchSidebar() {
   return (
     <Sidebar variant="inset">
       <SidebarContent>
         <SidebarGroup className="w-full mt-6 ml-4">
-          <h1 className="text-4xl font-black font-mono tracking-tight">
-            gltorch
-          </h1>
+          <Link href={"/"}>
+            <h1 className="text-4xl font-black font-mono tracking-tight">
+              gltorch
+            </h1>
+          </Link>
         </SidebarGroup>
         <SidebarGroup>
           <SidebarGroupLabel>
