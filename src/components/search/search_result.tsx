@@ -18,14 +18,14 @@ import {
 import sanitizeHtml from "sanitize-html";
 import { Project } from "@/types/project";
 
-interface SearchResultProps {
+export type SearchResultProps = {
   data: string;
   startLine: number;
   searchFor: string;
   filename: string;
   project: Project;
   path: string;
-}
+};
 
 export function SearchResult({
   data,

@@ -1,10 +1,10 @@
 import { Project } from "./project";
 
-export interface SearchResult {
+export type SearchResult = {
   id: string;
   path: string;
   filename: string;
   data: string;
   startLine: number;
   project: Project;
-}
+};
