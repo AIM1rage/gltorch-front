@@ -132,7 +132,7 @@ export function ProjectFilter({ inputID }: { inputID: string }) {
         </div>
       </div>
       <div className={cn(!open && "hidden", "relative mt-2")}>
-        <CommandList className="border border-border">
+        <CommandList className="border border-border rounded-md">
           {open && (
             <>
               {isFetching && <CommandEmpty>Loading...</CommandEmpty>}

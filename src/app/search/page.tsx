@@ -31,7 +31,7 @@ export default function Page() {
         <SearchBar className="w-full" />
       </div>
       <div className="pr-8 pl-6 py-6">
-        <SearchResults />;
+        <SearchResults />
       </div>
     </div>
   );
