@@ -6,6 +6,7 @@ import { NamespacesFilter } from "@/components/filter/namespaces";
 import { Label } from "@/components/ui/label";
 import SearchBar from "@/components/search/search_bar";
 import { redirect } from "next/navigation";
+import { AppRoute } from "@/constants/approute";
 
 export default function Home() {
   return (
@@ -17,7 +18,7 @@ export default function Home() {
 
         <SearchBar
           onSubmit={() => {
-            redirect("/search");
+            redirect(AppRoute.Search);
           }}
         />
 

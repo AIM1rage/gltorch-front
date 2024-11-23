@@ -10,13 +10,14 @@ import { ProjectFilter } from "@/components/filter/projects";
 import { Label } from "@/components/ui/label";
 import { NamespacesFilter } from "@/components/filter/namespaces";
 import Link from "next/link";
+import { AppRoute } from "@/constants/approute";
 
 export function SearchSidebar() {
   return (
     <Sidebar variant="inset">
       <SidebarContent>
         <SidebarGroup className="w-full mt-6 ml-4">
-          <Link href={"/"}>
+          <Link href={AppRoute.Home}>
             <h1 className="text-4xl font-black font-mono tracking-tight">
               gltorch
             </h1>
