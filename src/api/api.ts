@@ -1,7 +1,7 @@
 ﻿import { Group } from "@/types/group";
 import { Project } from "@/types/project";
 import { User } from "@/types/user";
-import { MOCK_RPOJECTS } from "@/mock/projects";
+import { MOCK_PROJECTS } from "@/mock/projects";
 import { MOCK_USERS } from "@/mock/users";
 import { MOCK_GROUPS } from "@/mock/groups";
 import { Namespace } from "@/types/namespace";
@@ -38,7 +38,7 @@ class Fake implements GLTorchApi {
     groupIDs: number[] | undefined,
     userIDs: number[] | undefined,
   ) {
-    return MOCK_RPOJECTS.filter((p) => p.pathWithNamespace.includes(search))
+    return MOCK_PROJECTS.filter((p) => p.pathWithNamespace.includes(search))
       .filter(
         (p) =>
           !groupIDs ||
@@ -80,13 +80,13 @@ class Fake implements GLTorchApi {
       (r) =>
         !projectIDs ||
         projectIDs.length == 0 ||
-        projectIDs.includes(r.projectID) ||
+        projectIDs.includes(r.project.id) ||
         !groupIDs ||
         groupIDs.length == 0 ||
-        groupIDs.some((gid) => r.namespace.group?.id === gid) ||
+        groupIDs.some((gid) => r.project.parent.group?.id === gid) ||
         !userIDs ||
         userIDs.length == 0 ||
-        userIDs.some((uid) => r.namespace.user?.id === uid),
+        userIDs.some((uid) => r.project.parent.user?.id === uid),
     );
   }
 }

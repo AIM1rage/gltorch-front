@@ -1,4 +1,4 @@
-import { Namespace } from "./namespace";
+import { Project } from "./project";
 
 export interface SearchResult {
   id: string;
@@ -6,7 +6,5 @@ export interface SearchResult {
   filename: string;
   data: string;
   startLine: number;
-  projectID: number;
-  projectPath: string;
-  namespace: Namespace;
+  project: Project;
 }

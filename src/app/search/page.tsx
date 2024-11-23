@@ -83,8 +83,8 @@ function SearchResults() {
   if (data && data.length > 0) {
     return (
       <div className="flex flex-col gap-8 w-full">
-        {data.map((result, i) => (
-          <SearchResult key={i} {...result} searchFor={search} />
+        {data.map((result) => (
+          <SearchResult key={result.id} {...result} searchFor={search} />
         ))}
       </div>
     );
