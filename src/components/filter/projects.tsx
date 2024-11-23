@@ -22,7 +22,7 @@ import { User } from "@/types/user";
 export function ProjectFilter({ inputID }: { inputID: string }) {
   const inputRef = React.useRef<HTMLInputElement>(null);
   inputRef.current?.setAttribute("id", inputID);
-  const [open, setOpen] = React.useState(false);
+  const [isOpened, setIsOpened] = React.useState(false);
   const [search, setSearch] = React.useState("");
   const [input, setInput] = React.useState("");
   const { projects, toggleProject, namespaces } = useFilterStore();
@@ -118,14 +118,14 @@ export function ProjectFilter({ inputID }: { inputID: string }) {
               ref={inputRef}
               value={input}
               onValueChange={(value) => {
-                setOpen(true);
+                setIsOpened(true);
                 debouncedSearch(value);
                 setInput(value);
               }}
-              onBlur={() => {
-                setOpen(false);
+              onBlur={() => setTimeout(() => {
+                setIsOpened(false);
                 setInput("");
-              }}
+              })}
               placeholder="Add a project"
               className="ml-2 flex-1 bg-transparent outline-none placeholder:text-muted-foreground"
             />
@@ -134,9 +134,9 @@ export function ProjectFilter({ inputID }: { inputID: string }) {
           {/* <span className="text-muted-foreground">⌘P</span> */}
         </div>
       </div>
-      <div className={cn(!open && "hidden", "relative mt-2")}>
+      <div className={cn(!isOpened && "hidden", "relative mt-2")}>
         <CommandList className="border border-border rounded-md">
-          {open && (
+          {isOpened && (
             <>
               {isFetching && <CommandEmpty>Loading...</CommandEmpty>}
               {isFetched && !isError && (
@@ -154,7 +154,7 @@ export function ProjectFilter({ inputID }: { inputID: string }) {
                       key={project.id}
                       onSelect={() => {
                         toggleProject(project);
-                        setOpen(false);
+                        setIsOpened(false);
                         setSearch("");
                         setInput("");
                       }}
