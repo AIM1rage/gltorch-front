@@ -40,6 +40,9 @@ export function ProjectFilter({ inputID }: { inputID: string }) {
           input.blur();
           setInput("");
         }
+        if (e.key === "Enter") {
+          input.blur();
+        }
       }
     },
     [projects, toggleProject],
@@ -124,7 +127,7 @@ export function ProjectFilter({ inputID }: { inputID: string }) {
                 setInput("");
               }}
               placeholder="Add a project"
-              className="ml-2 flex-1 truncate text-ellipsis bg-transparent outline-none placeholder:text-muted-foreground"
+              className="ml-2 flex-1 bg-transparent outline-none placeholder:text-muted-foreground"
             />
           </div>
           {/*  TODO add hotkeys and uncomment this */}

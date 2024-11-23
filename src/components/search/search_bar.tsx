@@ -17,11 +17,17 @@ import { cn } from "@/lib/utils";
 
 const formSchema = z.object({
   search: z.string().min(3, {
-    message: "Search must be at least 3 characters.",
+    message: "Search must be at least 3 characters long.",
   }),
 });
 
-export default function SearchBar({ className }: { className?: string }) {
+export default function SearchBar({
+  onSubmit,
+  className,
+}: {
+  onSubmit?: () => never;
+  className?: string;
+}) {
   const { search, setSearch } = useSearchStore();
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -31,14 +37,18 @@ export default function SearchBar({ className }: { className?: string }) {
     },
   });
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
+  function onSub(values: z.infer<typeof formSchema>) {
     setSearch(values.search);
+
+    if (onSubmit) {
+      onSubmit();
+    }
   }
 
   return (
     <Form {...form}>
       <form
-        onSubmit={form.handleSubmit(onSubmit)}
+        onSubmit={form.handleSubmit(onSub)}
         className={cn("flex items-center space-x-2", className)}
       >
         <FormField
