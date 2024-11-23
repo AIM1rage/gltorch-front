@@ -60,6 +60,7 @@ function SearchResults() {
   const { isPending, error, data } = useQuery({
     queryKey: [
       "search",
+      search,
       "projects",
       ...projectNames,
       "groups",
