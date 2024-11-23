@@ -40,6 +40,9 @@ export function ProjectFilter({ inputID }: { inputID: string }) {
           input.blur();
           setInput("");
         }
+        if (e.key === "Enter") {
+          input.blur();
+        }
       }
     },
     [projects, toggleProject],
