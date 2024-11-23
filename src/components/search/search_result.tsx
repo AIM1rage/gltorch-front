@@ -16,28 +16,29 @@ import {
   GitGraph,
 } from "lucide-react";
 import sanitizeHtml from "sanitize-html";
+import { Project } from "@/types/project";
 
-interface SearchResultProps {
+export type SearchResultProps = {
   data: string;
   startLine: number;
   searchFor: string;
   filename: string;
-  projectPath: string;
+  project: Project;
   path: string;
-}
+};
 
 export function SearchResult({
   data,
   startLine,
   searchFor,
   filename,
-  projectPath,
+  project,
   path,
 }: SearchResultProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [copied, setCopied] = useState(false);
 
-  const { highlightedLines, totalLines } = useMemo(() => {
+  const { highlightedLines, totalLines, firstLineWithSearch } = useMemo(() => {
     const sanSearch = sanitizeHtml(searchFor, {
       allowedTags: [],
       allowedAttributes: {},
@@ -54,7 +55,7 @@ export function SearchResult({
       const lineNumber = startLine + index;
       const highlightedLine = line.replace(
         searchRegex,
-        '<mark class="bg-primary/20 text-primary font-medium">$1</mark>',
+        '<mark class="bg-primary/40 text-primary-foreground font-medium">$1</mark>',
       );
 
       return (
@@ -73,11 +74,25 @@ export function SearchResult({
       );
     });
 
-    return { highlightedLines: highlighted, totalLines: lines.length };
+    const firstLineWithSearch = lines.findIndex((line) =>
+      line.toLowerCase().includes(searchFor.toLowerCase()),
+    );
+
+    return {
+      highlightedLines: highlighted,
+      totalLines: lines.length,
+      firstLineWithSearch: firstLineWithSearch,
+    };
   }, [data, startLine, searchFor]);
 
-  const visibleLines = isOpen ? highlightedLines : highlightedLines.slice(0, 5);
-  const hasMoreLines = totalLines > 5;
+  const visibleLines = isOpen
+    ? highlightedLines
+    : highlightedLines.slice(
+        Math.max(firstLineWithSearch - 2, 0),
+        Math.min(firstLineWithSearch + 3, highlightedLines.length),
+      );
+
+  const hasMoreLines = totalLines > visibleLines.length;
 
   const copyToClipboard = () => {
     navigator.clipboard.writeText(path).then(() => {
@@ -91,7 +106,9 @@ export function SearchResult({
       <div className="px-4 py-3 border-b flex items-center">
         <div className="flex flex-row items-center space-x-4 font-mono">
           <GitGraph className="h-4 w-4 text-muted-foreground" />
-          <span className="truncate text-ellipsis">{projectPath}</span>
+          <span className="truncate text-ellipsis">
+            {project.pathWithNamespace}
+          </span>
           <File className="h-4 w-4 text-muted-foreground" />
           <span>{filename}</span>
           <Button variant="outline" size="sm" onClick={copyToClipboard}>
@@ -104,14 +121,15 @@ export function SearchResult({
         </div>
       </div>
       <Collapsible open={isOpen} onOpenChange={setIsOpen}>
-        <div className="p-4">
-          <div className="space-y-1">{visibleLines}</div>
-        </div>
+        {(!hasMoreLines || !isOpen) && (
+          <div className="p-4">
+            <div className="space-y-1">{visibleLines}</div>
+          </div>
+        )}
+
         {hasMoreLines && (
           <CollapsibleContent>
-            <div className="space-y-1 p-4 pt-0">
-              {highlightedLines.slice(5)}
-            </div>
+            <div className="space-y-1 p-4 pt-0">{highlightedLines}</div>
           </CollapsibleContent>
         )}
         {hasMoreLines && (

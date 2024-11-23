@@ -5,6 +5,8 @@ import SearchBar from "@/components/search/search_bar";
 import { SearchResult } from "@/components/search/search_result";
 import { Button } from "@/components/ui/button";
 import { useSidebar } from "@/components/ui/sidebar";
+import { useIsMobile } from "@/hooks/use-mobile";
+import { cn } from "@/lib/utils";
 import { useFilterStore } from "@/store/filters";
 import { useSearchStore } from "@/store/search";
 import { Group } from "@/types/group";
@@ -14,24 +16,22 @@ import { PanelLeft } from "lucide-react";
 
 export default function Page() {
   const { toggleSidebar } = useSidebar();
+  const isMobile = useIsMobile();
 
   return (
     <div className="w-full flex flex-col">
-      <div className="flex flex-row w-full flex-1 py-8 px-6 gap-8 border-b border-border justify-center">
+      <div className="flex flex-row w-full flex-1 gap-4 py-6 px-6 border-b border-border justify-center">
         <Button
-          className="lg:hidden max-md:visible"
+          className={cn(!isMobile && "hidden")}
           variant="outline"
           onClick={toggleSidebar}
         >
           <PanelLeft />
         </Button>
-        <h1 className="text-4xl font-black font-mono tracking-tight">
-          gltorch
-        </h1>
         <SearchBar className="w-full" />
       </div>
       <div className="pr-8 pl-6 py-6">
-        <SearchResults />;
+        <SearchResults />
       </div>
     </div>
   );
@@ -60,6 +60,7 @@ function SearchResults() {
   const { isPending, error, data } = useQuery({
     queryKey: [
       "search",
+      search,
       "projects",
       ...projectNames,
       "groups",

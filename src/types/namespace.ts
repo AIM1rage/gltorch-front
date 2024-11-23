@@ -1,7 +1,7 @@
 import { Group } from "./group";
 import { User } from "./user";
 
-export interface Namespace {
+export type Namespace = {
   group?: Group;
   user?: User;
-}
+};

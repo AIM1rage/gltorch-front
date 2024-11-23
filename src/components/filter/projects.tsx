@@ -22,7 +22,7 @@ import { User } from "@/types/user";
 export function ProjectFilter({ inputID }: { inputID: string }) {
   const inputRef = React.useRef<HTMLInputElement>(null);
   inputRef.current?.setAttribute("id", inputID);
-  const [open, setOpen] = React.useState(false);
+  const [isOpened, setIsOpened] = React.useState(false);
   const [search, setSearch] = React.useState("");
   const [input, setInput] = React.useState("");
   const { projects, toggleProject, namespaces } = useFilterStore();
@@ -31,7 +31,7 @@ export function ProjectFilter({ inputID }: { inputID: string }) {
     (e: React.KeyboardEvent<HTMLDivElement>) => {
       const input = inputRef.current;
       if (input) {
-        if (e.key === "Delete" || e.key === "Backspace") {
+        if (e.key === "Backspace") {
           if (projects?.length > 0 && input.value === "") {
             toggleProject(projects[projects.length - 1]);
           }
@@ -39,6 +39,9 @@ export function ProjectFilter({ inputID }: { inputID: string }) {
         if (e.key === "Escape") {
           input.blur();
           setInput("");
+        }
+        if (e.key === "Enter") {
+          input.blur();
         }
       }
     },
@@ -115,25 +118,25 @@ export function ProjectFilter({ inputID }: { inputID: string }) {
               ref={inputRef}
               value={input}
               onValueChange={(value) => {
-                setOpen(true);
+                setIsOpened(true);
                 debouncedSearch(value);
                 setInput(value);
               }}
-              onBlur={() => {
-                setOpen(false);
+              onBlur={() => setTimeout(() => {
+                setIsOpened(false);
                 setInput("");
-              }}
+              })}
               placeholder="Add a project"
-              className="ml-2 flex-1 truncate text-ellipsis bg-transparent outline-none placeholder:text-muted-foreground"
+              className="ml-2 flex-1 bg-transparent outline-none placeholder:text-muted-foreground"
             />
           </div>
           {/*  TODO add hotkeys and uncomment this */}
           {/* <span className="text-muted-foreground">⌘P</span> */}
         </div>
       </div>
-      <div className={cn(!open && "hidden", "relative mt-2")}>
-        <CommandList className="border border-border">
-          {open && (
+      <div className={cn(!isOpened && "hidden", "relative mt-2")}>
+        <CommandList className="border border-border rounded-md">
+          {isOpened && (
             <>
               {isFetching && <CommandEmpty>Loading...</CommandEmpty>}
               {isFetched && !isError && (
@@ -151,7 +154,7 @@ export function ProjectFilter({ inputID }: { inputID: string }) {
                       key={project.id}
                       onSelect={() => {
                         toggleProject(project);
-                        setOpen(false);
+                        setIsOpened(false);
                         setSearch("");
                         setInput("");
                       }}
