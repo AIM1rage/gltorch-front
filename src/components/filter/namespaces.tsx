@@ -38,6 +38,9 @@ export function NamespacesFilter({ inputID }: { inputID: string }) {
           input.blur();
           setInput("");
         }
+        if (e.key === "Enter") {
+          input.blur();
+        }
       }
     },
     [namespaces, toggleNamespace],
