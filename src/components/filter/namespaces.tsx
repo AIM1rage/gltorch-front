@@ -29,7 +29,7 @@ export function NamespacesFilter({ inputID }: { inputID: string }) {
     (e: React.KeyboardEvent<HTMLDivElement>) => {
       const input = inputRef.current;
       if (input) {
-        if (e.key === "Delete" || e.key === "Backspace") {
+        if (e.key === "Backspace") {
           if (namespaces?.length > 0 && input.value === "") {
             toggleNamespace(namespaces[namespaces.length - 1]);
           }
@@ -120,7 +120,7 @@ export function NamespacesFilter({ inputID }: { inputID: string }) {
         </div>
       </div>
       <div className={cn(!open && "hidden", "relative mt-2")}>
-        <CommandList className="border border-border">
+        <CommandList className="border border-border rounded-md">
           {open && (
             <>
               {isFetching && <CommandEmpty>Loading...</CommandEmpty>}
