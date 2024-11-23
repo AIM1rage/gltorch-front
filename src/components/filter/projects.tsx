@@ -31,7 +31,7 @@ export function ProjectFilter({ inputID }: { inputID: string }) {
     (e: React.KeyboardEvent<HTMLDivElement>) => {
       const input = inputRef.current;
       if (input) {
-        if (e.key === "Delete" || e.key === "Backspace") {
+        if (e.key === "Backspace") {
           if (projects?.length > 0 && input.value === "") {
             toggleProject(projects[projects.length - 1]);
           }
