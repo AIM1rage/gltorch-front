@@ -16,13 +16,14 @@ import {
   GitGraph,
 } from "lucide-react";
 import sanitizeHtml from "sanitize-html";
+import { Project } from "@/types/project";
 
 interface SearchResultProps {
   data: string;
   startLine: number;
   searchFor: string;
   filename: string;
-  projectPath: string;
+  project: Project;
   path: string;
 }
 
@@ -31,7 +32,7 @@ export function SearchResult({
   startLine,
   searchFor,
   filename,
-  projectPath,
+  project,
   path,
 }: SearchResultProps) {
   const [isOpen, setIsOpen] = useState(false);
@@ -91,7 +92,9 @@ export function SearchResult({
       <div className="px-4 py-3 border-b flex items-center">
         <div className="flex flex-row items-center space-x-4 font-mono">
           <GitGraph className="h-4 w-4 text-muted-foreground" />
-          <span className="truncate text-ellipsis">{projectPath}</span>
+          <span className="truncate text-ellipsis">
+            {project.pathWithNamespace}
+          </span>
           <File className="h-4 w-4 text-muted-foreground" />
           <span>{filename}</span>
           <Button variant="outline" size="sm" onClick={copyToClipboard}>
