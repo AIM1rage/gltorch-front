@@ -38,7 +38,7 @@ export function SearchResult({
   const [isOpen, setIsOpen] = useState(false);
   const [copied, setCopied] = useState(false);
 
-  const { highlightedLines, totalLines } = useMemo(() => {
+  const { highlightedLines, totalLines, firstLineWithSearch } = useMemo(() => {
     const sanSearch = sanitizeHtml(searchFor, {
       allowedTags: [],
       allowedAttributes: {},
@@ -55,7 +55,7 @@ export function SearchResult({
       const lineNumber = startLine + index;
       const highlightedLine = line.replace(
         searchRegex,
-        '<mark class="bg-primary/20 text-primary font-medium">$1</mark>',
+        '<mark class="bg-primary/40 text-primary-foreground font-medium">$1</mark>',
       );
 
       return (
@@ -74,11 +74,25 @@ export function SearchResult({
       );
     });
 
-    return { highlightedLines: highlighted, totalLines: lines.length };
+    const firstLineWithSearch = lines.findIndex((line) =>
+      line.toLowerCase().includes(searchFor.toLowerCase()),
+    );
+
+    return {
+      highlightedLines: highlighted,
+      totalLines: lines.length,
+      firstLineWithSearch: firstLineWithSearch,
+    };
   }, [data, startLine, searchFor]);
 
-  const visibleLines = isOpen ? highlightedLines : highlightedLines.slice(0, 5);
-  const hasMoreLines = totalLines > 5;
+  const visibleLines = isOpen
+    ? highlightedLines
+    : highlightedLines.slice(
+        Math.max(firstLineWithSearch - 2, 0),
+        Math.min(firstLineWithSearch + 3, highlightedLines.length),
+      );
+
+  const hasMoreLines = totalLines > visibleLines.length;
 
   const copyToClipboard = () => {
     navigator.clipboard.writeText(path).then(() => {
@@ -107,14 +121,15 @@ export function SearchResult({
         </div>
       </div>
       <Collapsible open={isOpen} onOpenChange={setIsOpen}>
-        <div className="p-4">
-          <div className="space-y-1">{visibleLines}</div>
-        </div>
+        {(!hasMoreLines || !isOpen) && (
+          <div className="p-4">
+            <div className="space-y-1">{visibleLines}</div>
+          </div>
+        )}
+
         {hasMoreLines && (
           <CollapsibleContent>
-            <div className="space-y-1 p-4 pt-0">
-              {highlightedLines.slice(5)}
-            </div>
+            <div className="space-y-1 p-4 pt-0">{highlightedLines}</div>
           </CollapsibleContent>
         )}
         {hasMoreLines && (
