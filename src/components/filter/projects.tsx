@@ -14,10 +14,8 @@ import {
 import { Command as CommandPrimitive } from "cmdk";
 import { useFilterStore } from "@/store/filters";
 import { useQuery } from "@tanstack/react-query";
-import { MOCK_API } from "@/api/api";
+import { API } from "@/api/api";
 import { cn } from "@/lib/utils";
-import { Group } from "@/types/group";
-import { User } from "@/types/user";
 
 export function ProjectFilter({ inputID }: { inputID: string }) {
   const inputRef = React.useRef<HTMLInputElement>(null);
@@ -55,16 +53,12 @@ export function ProjectFilter({ inputID }: { inputID: string }) {
         return Promise.resolve([]);
       }
 
-      const groups = namespaces
-        .map((ns) => ns.group)
-        .filter((g) => g) as Group[];
-      const users = namespaces.map((ns) => ns.user).filter((u) => u) as User[];
-
-      return MOCK_API.getProjects(
+      return API.projects({
         search,
-        groups.map((g) => g.id),
-        users.map((u) => u.id),
-      );
+        namespaces,
+        take: 20,
+        nextToken: null,
+      }).then((res) => res.values);
     },
   });
 
@@ -122,10 +116,12 @@ export function ProjectFilter({ inputID }: { inputID: string }) {
                 debouncedSearch(value);
                 setInput(value);
               }}
-              onBlur={() => setTimeout(() => {
-                setIsOpened(false);
-                setInput("");
-              })}
+              onBlur={() =>
+                setTimeout(() => {
+                  setIsOpened(false);
+                  setInput("");
+                })
+              }
               placeholder="Add a project"
               className="ml-2 flex-1 bg-transparent outline-none placeholder:text-muted-foreground"
             />
