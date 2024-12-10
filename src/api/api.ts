@@ -1,94 +1,140 @@
-﻿import { Group } from "@/types/group";
-import { Project } from "@/types/project";
-import { User } from "@/types/user";
-import { MOCK_PROJECTS } from "@/mock/projects";
-import { MOCK_USERS } from "@/mock/users";
-import { MOCK_GROUPS } from "@/mock/groups";
-import { Namespace } from "@/types/namespace";
-import { SearchResult } from "@/types/search_result";
-import { MOCK_SEARCH_RESULTS } from "@/mock/search_results";
+﻿import {Group} from "@/types/group";
+import {Project} from "@/types/project";
+import {User} from "@/types/user";
+import {Namespace} from "@/types/namespace";
+import {SearchResult} from "@/types/search_result";
+import axios, {AxiosInstance} from "axios";
+
+export type PaginatedResponse<T> = {
+    values: T[];
+    nextToken: string;
+};
 
 export interface GLTorchApi {
-  // note(aim1rage): если указана хотя бы одна группа или пользователь, то поиск репозиториев будет только по указанным группам или пользователям
-  // note(aim1rage): иначе - поиск репозиториев будет идти по все видимым текущему пользователю
-  getProjects: (
-    search: string,
-    groupIDs?: number[],
-    userIDs?: number[],
-  ) => Promise<Project[]>;
+    me(): Promise<User>;
 
-  // note(aim1rage): если ничего не указано, то поиск будет по всем видимым репозиториям
-  // note(aim1rage): если указаны только группы или пользователи, то поиск будет по всем репозиториям перечисленных групп или пользователей
-  // note(aim1rage): если указаны репозитории, то поиск будет идти по перечисленным репозиториям
-  getSearchResults: (
-    search: string,
-    groupIDs?: number[],
-    userIDs?: number[],
-    projectIDs?: number[],
-  ) => Promise<SearchResult[]>;
+    search(
+        search: string,
+        namespaces?: Namespace[],
+        projects?: Project[],
+        take?: number,
+        nextToken?: string,
+    ): Promise<PaginatedResponse<SearchResult>>;
 
-  getUsers: (search: string) => Promise<User[]>;
-  getGroups: (search: string) => Promise<Group[]>;
-  getNamespaces: (search: string) => Promise<Namespace[]>;
-} // TODO add getSearchResults: (...) @Aim1rage
+    users(
+        search: string,
+        take?: number,
+        nextToken?: string,
+    ): Promise<PaginatedResponse<User>>;
 
-class Fake implements GLTorchApi {
-  async getProjects(
-    search: string,
-    groupIDs: number[] | undefined,
-    userIDs: number[] | undefined,
-  ) {
-    return MOCK_PROJECTS.filter((p) => p.pathWithNamespace.includes(search))
-      .filter(
-        (p) =>
-          !groupIDs ||
-          groupIDs.length == 0 ||
-          !p.parent.group ||
-          groupIDs.includes(p.parent.group.id),
-      )
-      .filter(
-        (p) =>
-          !userIDs ||
-          userIDs.length == 0 ||
-          !p.parent.user ||
-          userIDs.includes(p.parent.user.id),
-      );
-  }
+    groups(
+        search: string,
+        take?: number,
+        nextToken?: string,
+    ): Promise<PaginatedResponse<Group>>;
 
-  async getUsers(search: string) {
-    return MOCK_USERS.filter((u) => u.username.includes(search));
-  }
+    namespaces(
+        search: string,
+        take?: number,
+        nextToken?: string,
+    ): Promise<PaginatedResponse<Namespace>>;
 
-  async getGroups(search: string) {
-    return MOCK_GROUPS.filter((g) => g.path.includes(search));
-  }
-
-  async getNamespaces(search: string) {
-    return [
-      ...(await this.getGroups(search)).map((g) => ({ group: g })),
-      ...(await this.getUsers(search)).map((u) => ({ user: u })),
-    ] as Namespace[];
-  }
-
-  async getSearchResults(
-    search: string,
-    groupIDs?: number[],
-    userIDs?: number[],
-    projectIDs?: number[],
-  ) {
-    return MOCK_SEARCH_RESULTS.filter((r) => r.data.includes(search)).filter(
-      (r) =>
-        !projectIDs ||
-        projectIDs.length == 0 ||
-        projectIDs.includes(r.project.id) ||
-        !groupIDs ||
-        groupIDs.length == 0 ||
-        groupIDs.some((gid) => r.project.parent.group?.id === gid) ||
-        !userIDs ||
-        userIDs.length == 0 ||
-        userIDs.some((uid) => r.project.parent.user?.id === uid),
-    );
-  }
+    projects(
+        search: string,
+        groupIDs?: number[],
+        userIDs?: number[],
+        take?: number,
+        nextToken?: string,
+    ): Promise<PaginatedResponse<Project>>;
 }
 
-export const MOCK_API = new Fake();
+class Real implements GLTorchApi {
+    axios: AxiosInstance;
+
+    constructor() {
+        this.axios = axios.create({
+            baseURL: "https://api.pcmate.tech/",
+            timeout: 1000,
+        });
+    }
+
+    async me(): Promise<User> {
+        const res = await this.axios.get<User>("/users/me");
+        return res.data;
+    }
+
+    async search(
+        search: string,
+        namespaces?: Namespace[],
+        projects?: Project[],
+        take: number = 20,
+        nextToken: string | null = null,
+    ): Promise<PaginatedResponse<SearchResult>> {
+        const res = await this.axios.post<PaginatedResponse<SearchResult>>(
+            "/projects/search",
+            {search, namespaces, projects, take, nextToken},
+        );
+        return res.data;
+    }
+
+    async users(
+        search: string,
+        take: number = 20,
+        nextToken: string | null = null,
+    ): Promise<PaginatedResponse<User>> {
+        const res = await this.axios.post<PaginatedResponse<User>>("/users", {
+            search,
+            take,
+            nextToken,
+        });
+        return res.data;
+    }
+
+    async groups(
+        search: string,
+        take: number = 20,
+        nextToken: string | null = null,
+    ): Promise<PaginatedResponse<Group>> {
+        const res = await this.axios.post<PaginatedResponse<Group>>("/groups", {
+            search,
+            take,
+            nextToken,
+        });
+        return res.data;
+    }
+
+    async namespaces(
+        search: string,
+        take: number = 20,
+        nextToken: string | null = null,
+    ): Promise<PaginatedResponse<Namespace>> {
+        const res = await this.axios.post<PaginatedResponse<Namespace>>(
+            "/namespaces",
+            {
+                search,
+                take,
+                nextToken,
+            },
+        );
+        return res.data;
+    }
+
+    async projects(
+        search: string,
+        groupIDs?: number[],
+        userIDs?: number[],
+        take: number = 20,
+        nextToken: string | null = null,
+    ): Promise<PaginatedResponse<Project>> {
+        const res = await this.axios.post<PaginatedResponse<Project>>("/projects", {
+            search,
+            groupIDs,
+            userIDs,
+            take,
+            nextToken,
+        });
+        return res.data;
+    }
+}
+
+export const API = new Real();
