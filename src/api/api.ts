@@ -10,42 +10,35 @@ export type PaginatedResponse<T> = {
     nextToken: string;
 };
 
+interface GenericSearchParams {
+    search: string;
+    take: number;
+    nextToken: string | null;
+}
+
+interface SearchParams extends GenericSearchParams {
+    namespaces?: Namespace[];
+    projects?: Project[];
+}
+
+interface ProjectsParams extends GenericSearchParams {
+    namespaces?: Namespace[];
+}
+
 export interface GLTorchApi {
     me(): Promise<User>;
 
-    search(
-        search: string,
-        namespaces?: Namespace[],
-        projects?: Project[],
-        take?: number,
-        nextToken?: string,
-    ): Promise<PaginatedResponse<SearchResult>>;
+    search(params: SearchParams): Promise<PaginatedResponse<SearchResult>>;
 
-    users(
-        search: string,
-        take?: number,
-        nextToken?: string,
-    ): Promise<PaginatedResponse<User>>;
+    users(params: GenericSearchParams): Promise<PaginatedResponse<User>>;
 
-    groups(
-        search: string,
-        take?: number,
-        nextToken?: string,
-    ): Promise<PaginatedResponse<Group>>;
+    groups(params: GenericSearchParams): Promise<PaginatedResponse<Group>>;
 
     namespaces(
-        search: string,
-        take?: number,
-        nextToken?: string,
+        params: GenericSearchParams,
     ): Promise<PaginatedResponse<Namespace>>;
 
-    projects(
-        search: string,
-        groupIDs?: number[],
-        userIDs?: number[],
-        take?: number,
-        nextToken?: string,
-    ): Promise<PaginatedResponse<Project>>;
+    projects(params: ProjectsParams): Promise<PaginatedResponse<Project>>;
 }
 
 class Real implements GLTorchApi {
@@ -63,76 +56,45 @@ class Real implements GLTorchApi {
         return res.data;
     }
 
-    async search(
-        search: string,
-        namespaces?: Namespace[],
-        projects?: Project[],
-        take: number = 20,
-        nextToken: string | null = null,
-    ): Promise<PaginatedResponse<SearchResult>> {
+    async search(params: SearchParams): Promise<PaginatedResponse<SearchResult>> {
         const res = await this.axios.post<PaginatedResponse<SearchResult>>(
             "/projects/search",
-            {search, namespaces, projects, take, nextToken},
+            params,
         );
         return res.data;
     }
 
-    async users(
-        search: string,
-        take: number = 20,
-        nextToken: string | null = null,
-    ): Promise<PaginatedResponse<User>> {
-        const res = await this.axios.post<PaginatedResponse<User>>("/users", {
-            search,
-            take,
-            nextToken,
-        });
+    async users(params: GenericSearchParams): Promise<PaginatedResponse<User>> {
+        const res = await this.axios.post<PaginatedResponse<User>>(
+            "/users",
+            params,
+        );
         return res.data;
     }
 
-    async groups(
-        search: string,
-        take: number = 20,
-        nextToken: string | null = null,
-    ): Promise<PaginatedResponse<Group>> {
-        const res = await this.axios.post<PaginatedResponse<Group>>("/groups", {
-            search,
-            take,
-            nextToken,
-        });
+    async groups(params: GenericSearchParams): Promise<PaginatedResponse<Group>> {
+        const res = await this.axios.post<PaginatedResponse<Group>>(
+            "/groups",
+            params,
+        );
         return res.data;
     }
 
     async namespaces(
-        search: string,
-        take: number = 20,
-        nextToken: string | null = null,
+        params: GenericSearchParams,
     ): Promise<PaginatedResponse<Namespace>> {
         const res = await this.axios.post<PaginatedResponse<Namespace>>(
             "/namespaces",
-            {
-                search,
-                take,
-                nextToken,
-            },
+            params,
         );
         return res.data;
     }
 
-    async projects(
-        search: string,
-        groupIDs?: number[],
-        userIDs?: number[],
-        take: number = 20,
-        nextToken: string | null = null,
-    ): Promise<PaginatedResponse<Project>> {
-        const res = await this.axios.post<PaginatedResponse<Project>>("/projects", {
-            search,
-            groupIDs,
-            userIDs,
-            take,
-            nextToken,
-        });
+    async projects(params: ProjectsParams): Promise<PaginatedResponse<Project>> {
+        const res = await this.axios.post<PaginatedResponse<Project>>(
+            "/projects",
+            params,
+        );
         return res.data;
     }
 }
