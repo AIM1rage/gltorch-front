@@ -34,9 +34,9 @@ export default function Page() {
           <PanelLeft />
         </Button>
         <SearchBar className="w-full" />
-        <Notices />
       </div>
       <div className="pr-8 pl-6 py-6">
+        <Notices />
         <SearchResults />
       </div>
     </div>

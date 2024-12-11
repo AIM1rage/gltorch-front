@@ -43,7 +43,7 @@ class Real implements GLTorchApi {
 
   constructor() {
     this.axios = axios.create({
-      baseURL: "https://api.pcmate.tech/",
+      baseURL: "https://dev.api.pcmate.tech/",
       timeout: 1000,
     });
 
