@@ -113,7 +113,7 @@ export function NamespacesFilter({ inputID }: { inputID: string }) {
               onBlur={() => setTimeout(() => {
                 setIsOpened(false);
                 setInput("");
-              })}
+              }, 1000)}
               placeholder="Add a namespace"
               className="ml-2 flex-1 bg-transparent outline-none placeholder:text-muted-foreground"
             />
