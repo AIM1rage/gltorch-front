@@ -14,7 +14,7 @@ import {
 import { Command as CommandPrimitive } from "cmdk";
 import { useFilterStore } from "@/store/filters";
 import { useQuery } from "@tanstack/react-query";
-import { MOCK_API } from "@/api/api";
+import { API } from "@/api/api";
 import { cn } from "@/lib/utils";
 
 export function NamespacesFilter({ inputID }: { inputID: string }) {
@@ -53,7 +53,9 @@ export function NamespacesFilter({ inputID }: { inputID: string }) {
         return Promise.resolve([]);
       }
 
-      return MOCK_API.getNamespaces(search);
+      return API.namespaces({ search, take: 20, nextToken: "" }).then(
+        (res) => res.values,
+      );
     },
   });
 
@@ -86,15 +88,15 @@ export function NamespacesFilter({ inputID }: { inputID: string }) {
                   </span>
                   <button
                     className="ml-1 rounded-full outline-none ring-offset-background focus:ring-2 focus:ring-ring focus:ring-offset-2"
-                    onKeyDown={(e) => {
-                      if (e.key === "Enter") {
-                        toggleNamespace(ns);
-                      }
-                    }}
-                    onMouseDown={(e) => {
-                      e.preventDefault();
-                      e.stopPropagation();
-                    }}
+                    // onKeyDown={(e) => {
+                    //   if (e.key === "Enter") {
+                    //     toggleNamespace(ns);
+                    //   }
+                    // }}
+                    // onMouseDown={(e) => {
+                    //   e.preventDefault();
+                    //   e.stopPropagation();
+                    // }}
                     onClick={() => toggleNamespace(ns)}
                   >
                     <X className="h-4 w-4 text-muted-foreground hover:text-foreground" />
@@ -110,10 +112,12 @@ export function NamespacesFilter({ inputID }: { inputID: string }) {
                 debouncedSearch(value);
                 setInput(value);
               }}
-              onBlur={() => setTimeout(() => {
-                setIsOpened(false);
-                setInput("");
-              })}
+              onBlur={() =>
+                setTimeout(() => {
+                  setIsOpened(false);
+                  setInput("");
+                })
+              }
               placeholder="Add a namespace"
               className="ml-2 flex-1 bg-transparent outline-none placeholder:text-muted-foreground"
             />

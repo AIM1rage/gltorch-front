@@ -1,6 +1,6 @@
 "use client";
-
-import { MOCK_API } from "@/api/api";
+import dynamic from "next/dynamic";
+import { API } from "@/api/api";
 import SearchBar from "@/components/search/search_bar";
 import { SearchResult } from "@/components/search/search_result";
 import { Button } from "@/components/ui/button";
@@ -11,8 +11,13 @@ import { useFilterStore } from "@/store/filters";
 import { useSearchStore } from "@/store/search";
 import { Group } from "@/types/group";
 import { User } from "@/types/user";
-import { useQuery } from "@tanstack/react-query";
+import { useInfiniteQuery } from "@tanstack/react-query";
 import { PanelLeft } from "lucide-react";
+import React from "react";
+
+const Notices = dynamic(() => import("@/components/notices/notices"), {
+  ssr: false,
+});
 
 export default function Page() {
   const { toggleSidebar } = useSidebar();
@@ -31,6 +36,7 @@ export default function Page() {
         <SearchBar className="w-full" />
       </div>
       <div className="pr-8 pl-6 py-6">
+        <Notices />
         <SearchResults />
       </div>
     </div>
@@ -39,25 +45,17 @@ export default function Page() {
 
 function SearchResults() {
   const { search } = useSearchStore();
-  const filters = useFilterStore();
+  const { namespaces, projects } = useFilterStore();
 
-  const projectNames = filters.projects.map((p) => p.pathWithNamespace);
-  const projectIds = filters.projects.map((p) => p.id);
+  const projectNames = projects.map((p) => p.pathWithNamespace);
 
-  const groups = filters.namespaces
-    .map((ns) => ns.group)
-    .filter((g) => g) as Group[];
-  const users = filters.namespaces
-    .map((ns) => ns.user)
-    .filter((u) => u) as User[];
+  const groups = namespaces.map((ns) => ns.group).filter((g) => g) as Group[];
+  const users = namespaces.map((ns) => ns.user).filter((u) => u) as User[];
 
   const groupNames = groups.map((g) => g.path);
-  const groupIds = groups.map((g) => g.id);
-
   const userNames = users.map((u) => u.username);
-  const userIds = users.map((u) => u.id);
 
-  const { isPending, error, data } = useQuery({
+  const { status, data } = useInfiniteQuery({
     queryKey: [
       "search",
       search,
@@ -68,28 +66,36 @@ function SearchResults() {
       "users",
       ...userNames,
     ],
-    queryFn: () =>
-      MOCK_API.getSearchResults(search, groupIds, userIds, projectIds),
+    queryFn: ({ pageParam }) =>
+      API.search({
+        search,
+        namespaces,
+        projects,
+        take: 20,
+        nextToken: pageParam,
+      }),
+    initialPageParam: "" as string | null,
+    getNextPageParam: (lastPage) => lastPage.nextToken,
     enabled: search.length >= 3,
   });
-
-  if (isPending) {
-    return <div>Loading...</div>;
+  if (status === "pending") {
+    return <span>Loading...</span>;
   }
 
-  if (error) {
-    return <div>Error: {error.message}</div>;
+  if (status === "error") {
+    return <span>Loading...</span>;
   }
-
-  if (data && data.length > 0) {
-    return (
-      <div className="flex flex-col gap-8 w-full">
-        {data.map((result) => (
-          <SearchResult key={result.id} {...result} searchFor={search} />
+  return (
+    <div className="flex flex-col gap-8 w-full">
+      {data &&
+        data.pages.map((group, i) => (
+          <React.Fragment key={i}>
+            {group &&
+              group.values.map((result) => (
+                <SearchResult key={result.id} {...result} searchFor={search} />
+              ))}
+          </React.Fragment>
         ))}
-      </div>
-    );
-  } else {
-    return <span>No results</span>;
-  }
+    </div>
+  );
 }
