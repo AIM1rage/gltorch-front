@@ -69,7 +69,7 @@ function SearchResults() {
         take: 20,
         nextToken: pageParam,
       }),
-    initialPageParam: null as string | null,
+    initialPageParam: "" as string | null,
     getNextPageParam: (lastPage) => lastPage.nextToken,
     enabled: search.length >= 3,
   });

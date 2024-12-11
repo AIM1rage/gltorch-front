@@ -53,7 +53,7 @@ export function NamespacesFilter({ inputID }: { inputID: string }) {
         return Promise.resolve([]);
       }
 
-      return API.namespaces({ search, take: 20, nextToken: null }).then(
+      return API.namespaces({ search, take: 20, nextToken: "" }).then(
         (res) => res.values,
       );
     },

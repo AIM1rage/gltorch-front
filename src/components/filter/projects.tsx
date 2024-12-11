@@ -56,7 +56,7 @@ export function ProjectFilter({ inputID }: { inputID: string }) {
       return API.projects({
         search,
         take: 20,
-        nextToken: null,
+        nextToken: "",
       }).then((res) => res.values);
     },
   });
