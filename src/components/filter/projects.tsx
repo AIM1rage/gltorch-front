@@ -23,7 +23,7 @@ export function ProjectFilter({ inputID }: { inputID: string }) {
   const [isOpened, setIsOpened] = React.useState(false);
   const [search, setSearch] = React.useState("");
   const [input, setInput] = React.useState("");
-  const { projects, toggleProject, namespaces } = useFilterStore();
+  const { projects, toggleProject } = useFilterStore();
 
   const handleKeyDown = React.useCallback(
     (e: React.KeyboardEvent<HTMLDivElement>) => {
@@ -55,7 +55,6 @@ export function ProjectFilter({ inputID }: { inputID: string }) {
 
       return API.projects({
         search,
-        namespaces,
         take: 20,
         nextToken: null,
       }).then((res) => res.values);

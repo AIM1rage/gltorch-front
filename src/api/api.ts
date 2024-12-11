@@ -21,10 +21,6 @@ interface SearchParams extends GenericSearchParams {
   projects?: Project[];
 }
 
-interface ProjectsParams extends GenericSearchParams {
-  namespaces?: Namespace[];
-}
-
 export interface GLTorchApi {
   me(): Promise<User>;
 
@@ -38,7 +34,7 @@ export interface GLTorchApi {
     params: GenericSearchParams,
   ): Promise<PaginatedResponse<Namespace>>;
 
-  projects(params: ProjectsParams): Promise<PaginatedResponse<Project>>;
+  projects(params: GenericSearchParams): Promise<PaginatedResponse<Project>>;
 }
 
 class Real implements GLTorchApi {
@@ -90,7 +86,9 @@ class Real implements GLTorchApi {
     return res.data;
   }
 
-  async projects(params: ProjectsParams): Promise<PaginatedResponse<Project>> {
+  async projects(
+    params: GenericSearchParams,
+  ): Promise<PaginatedResponse<Project>> {
     const res = await this.axios.post<PaginatedResponse<Project>>(
       "/projects",
       params,
