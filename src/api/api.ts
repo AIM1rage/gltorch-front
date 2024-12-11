@@ -44,7 +44,7 @@ class Real implements GLTorchApi {
   constructor() {
     this.axios = axios.create({
       baseURL: "https://dev.api.pcmate.tech/",
-      timeout: 1000,
+      timeout: 6000,
     });
 
     this.axios.interceptors.request.use((config) => {
@@ -64,6 +64,7 @@ class Real implements GLTorchApi {
   }
 
   async search(params: SearchParams): Promise<PaginatedResponse<SearchResult>> {
+    console.log(JSON.stringify(params));
     const res = await this.axios.post<PaginatedResponse<SearchResult>>(
       "/projects/search",
       params,

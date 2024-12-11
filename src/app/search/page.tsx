@@ -87,13 +87,15 @@ function SearchResults() {
   }
   return (
     <div className="flex flex-col gap-8 w-full">
-      {data.pages.map((group, i) => (
-        <React.Fragment key={i}>
-          {group.values.map((result) => (
-            <SearchResult key={result.id} {...result} searchFor={search} />
-          ))}
-        </React.Fragment>
-      ))}
+      {data &&
+        data.pages.map((group, i) => (
+          <React.Fragment key={i}>
+            {group &&
+              group.values.map((result) => (
+                <SearchResult key={result.id} {...result} searchFor={search} />
+              ))}
+          </React.Fragment>
+        ))}
     </div>
   );
 }
