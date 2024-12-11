@@ -4,6 +4,7 @@ import { User } from "@/types/user";
 import { Namespace } from "@/types/namespace";
 import { SearchResult } from "@/types/search_result";
 import axios, { AxiosInstance } from "axios";
+import useAuthStore from "@/store/auth";
 
 export type PaginatedResponse<T> = {
   values: T[];
@@ -44,6 +45,16 @@ class Real implements GLTorchApi {
     this.axios = axios.create({
       baseURL: "https://api.pcmate.tech/",
       timeout: 1000,
+    });
+
+    this.axios.interceptors.request.use((config) => {
+      const token = useAuthStore.getState().token;
+
+      if (token && config.headers) {
+        config.headers["X-Token"] = token;
+      }
+
+      return config;
     });
   }
 

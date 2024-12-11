@@ -1,5 +1,5 @@
 "use client";
-
+import dynamic from "next/dynamic";
 import { API } from "@/api/api";
 import SearchBar from "@/components/search/search_bar";
 import { SearchResult } from "@/components/search/search_result";
@@ -14,6 +14,10 @@ import { User } from "@/types/user";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { PanelLeft } from "lucide-react";
 import React from "react";
+
+const Notices = dynamic(() => import("@/components/notices/notices"), {
+  ssr: false,
+});
 
 export default function Page() {
   const { toggleSidebar } = useSidebar();
@@ -30,6 +34,7 @@ export default function Page() {
           <PanelLeft />
         </Button>
         <SearchBar className="w-full" />
+        <Notices />
       </div>
       <div className="pr-8 pl-6 py-6">
         <SearchResults />

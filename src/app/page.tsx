@@ -1,5 +1,6 @@
 "use client";
 
+import dynamic from "next/dynamic";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { ProjectFilter } from "@/components/filter/projects";
 import { NamespacesFilter } from "@/components/filter/namespaces";
@@ -7,6 +8,10 @@ import { Label } from "@/components/ui/label";
 import SearchBar from "@/components/search/search_bar";
 import { redirect } from "next/navigation";
 import { AppRoute } from "@/constants/approute";
+
+const Notices = dynamic(() => import("@/components/notices/notices"), {
+  ssr: false,
+});
 
 export default function Home() {
   return (
@@ -21,6 +26,8 @@ export default function Home() {
             redirect(AppRoute.Search);
           }}
         />
+
+        <Notices />
 
         <Card className="bg-card">
           <CardHeader>
