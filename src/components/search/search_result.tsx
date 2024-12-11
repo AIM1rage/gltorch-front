@@ -20,18 +20,18 @@ import { Project } from "@/types/project";
 
 export type SearchResultProps = {
   data: string;
-  startLine: number;
+  startline: number;
   searchFor: string;
-  filename: string;
+  fileName: string;
   project: Project;
   path: string;
 };
 
 export function SearchResult({
   data,
-  startLine,
+  startline,
   searchFor,
-  filename,
+  fileName,
   project,
   path,
 }: SearchResultProps) {
@@ -52,7 +52,7 @@ export function SearchResult({
     const searchRegex = new RegExp(`(${sanSearch})`, "gi");
 
     const highlighted = lines.map((line, index) => {
-      const lineNumber = startLine + index;
+      const lineNumber = startline + index;
       const highlightedLine = line.replace(
         searchRegex,
         '<mark class="bg-primary/40 text-primary-foreground font-medium">$1</mark>',
@@ -83,7 +83,7 @@ export function SearchResult({
       totalLines: lines.length,
       firstLineWithSearch: firstLineWithSearch,
     };
-  }, [data, startLine, searchFor]);
+  }, [data, startline, searchFor]);
 
   const visibleLines = isOpen
     ? highlightedLines
@@ -110,7 +110,7 @@ export function SearchResult({
             {project.pathWithNamespace}
           </span>
           <File className="h-4 w-4 text-muted-foreground" />
-          <span>{filename}</span>
+          <span>{fileName}</span>
           <Button variant="outline" size="sm" onClick={copyToClipboard}>
             {copied ? (
               <Check className="h-3 w-3" />

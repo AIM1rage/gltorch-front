@@ -115,12 +115,10 @@ export function ProjectFilter({ inputID }: { inputID: string }) {
                 debouncedSearch(value);
                 setInput(value);
               }}
-              onBlur={() =>
-                setTimeout(() => {
-                  setIsOpened(false);
-                  setInput("");
-                })
-              }
+              onBlur={() => setTimeout(() => {
+                setIsOpened(false);
+                setInput("");
+              }, 1000)}
               placeholder="Add a project"
               className="ml-2 flex-1 bg-transparent outline-none placeholder:text-muted-foreground"
             />

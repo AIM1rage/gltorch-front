@@ -82,9 +82,9 @@ export function NamespacesFilter({ inputID }: { inputID: string }) {
                 >
                   <span
                     className="truncate min-w-0 max-w-full"
-                    title={ns.group?.path || "@" + ns.user?.username}
+                    title={ns.group?.path || "@" + (ns.user?.username || ns.user?.name)}
                   >
-                    {ns.group?.path || "@" + ns.user?.username}
+                    {ns.group?.path || "@" + (ns.user?.username || ns.user?.name)}
                   </span>
                   <button
                     className="ml-1 rounded-full outline-none ring-offset-background focus:ring-2 focus:ring-ring focus:ring-offset-2"
@@ -112,12 +112,10 @@ export function NamespacesFilter({ inputID }: { inputID: string }) {
                 debouncedSearch(value);
                 setInput(value);
               }}
-              onBlur={() =>
-                setTimeout(() => {
-                  setIsOpened(false);
-                  setInput("");
-                })
-              }
+              onBlur={() => setTimeout(() => {
+                setIsOpened(false);
+                setInput("");
+              }, 1000)}
               placeholder="Add a namespace"
               className="ml-2 flex-1 bg-transparent outline-none placeholder:text-muted-foreground"
             />
@@ -193,9 +191,9 @@ export function NamespacesFilter({ inputID }: { inputID: string }) {
                               namespaces.some((n) => n.user?.id === ns.user?.id)
                                 ? "opacity-100"
                                 : "opacity-0",
-                            )}
+                            )}  
                           />
-                          {"@" + ns.user!.username}
+                          {"@" + (ns.user!.username || ns.user!.name)}
                         </CommandItem>
                       ))}
                 </CommandGroup>

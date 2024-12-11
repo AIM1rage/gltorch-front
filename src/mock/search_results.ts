@@ -25,9 +25,9 @@ func (t Tick) LogValue() slog.Value {
 		slog.Any("volume", t.Volume),
  	)
 }`,
-    startLine: 1,
+    startline: 1,
     path: "data/data.go",
-    filename: "data.go",
+    fileName: "data.go",
     project: {
       id: 101,
       path: "stratosphere",
@@ -85,9 +85,9 @@ func ticksToCandles(intvl time.Duration, ticks <-chan Tick, candles chan<- Candl
   candles <- cur
 }`,
     id: 2,
-    startLine: 77,
+    startline: 77,
     path: "data/data.go",
-    filename: "data.go",
+    fileName: "data.go",
     project: {
       id: 101,
       path: "stratosphere",
