@@ -17,6 +17,7 @@ import {
 } from "lucide-react";
 import sanitizeHtml from "sanitize-html";
 import { Project } from "@/types/project";
+import { Link } from "../ui/link";
 
 export type SearchResultProps = {
   data: string;
@@ -107,7 +108,7 @@ export function SearchResult({
         <div className="flex flex-row items-center space-x-4 font-mono">
           <GitGraph className="h-4 w-4 text-muted-foreground" />
           <span className="truncate text-ellipsis">
-            {project.pathWithNamespace}
+            <Link href={project.webUrl}>{project.pathWithNamespace}</Link>
           </span>
           <File className="h-4 w-4 text-muted-foreground" />
           <span>{fileName}</span>
