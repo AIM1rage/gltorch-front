@@ -25,15 +25,12 @@ export default function Home() {
           <h1 className="text-center w-full text-4xl font-black font-mono tracking-tight">
             gltorch
           </h1>
-
           <SearchBar
             onSubmit={() => {
               redirect(AppRoute.Search);
             }}
           />
-
           <Notices />
-
           <Card className="bg-card">
             <CardHeader>
               <CardTitle>Filters</CardTitle>
