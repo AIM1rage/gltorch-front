@@ -92,7 +92,7 @@ function SearchResults() {
   });
 
   const observer = useRef<IntersectionObserver>();
-  useCallback(
+  const lastElementRef = useCallback(
     (node: HTMLDivElement) => {
       if (isLoading) return;
 
@@ -124,8 +124,10 @@ function SearchResults() {
         data.pages.map((group, i) => (
           <React.Fragment key={i}>
             {group &&
-              group.values.map((result) => (
-                <SearchResult key={result.id} {...result} searchFor={search} />
+              group.values.map((result, gi) => (
+                <div ref={lastElementRef} key={result.id + i + gi}>
+                  <SearchResult {...result} searchFor={search} />
+                </div>
               ))}
           </React.Fragment>
         ))}
