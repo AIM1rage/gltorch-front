@@ -12,8 +12,10 @@ import { useSearchStore } from "@/store/search";
 import { Group } from "@/types/group";
 import { User } from "@/types/user";
 import { useInfiniteQuery } from "@tanstack/react-query";
-import { PanelLeft } from "lucide-react";
+import { AlertOctagon, CheckCircle, Loader2, PanelLeft } from "lucide-react";
 import React from "react";
+import { Notice } from "@/components/ui/notice";
+import { motion } from "framer-motion";
 
 const Notices = dynamic(() => import("@/components/notices/notices"), {
   ssr: false,
@@ -55,36 +57,40 @@ function SearchResults() {
   const groupNames = groups.map((g) => g.path);
   const userNames = users.map((u) => u.username);
 
-  const { status, data } = useInfiniteQuery({
-    queryKey: [
-      "search",
-      search,
-      "projects",
-      ...projectNames,
-      "groups",
-      ...groupNames,
-      "users",
-      ...userNames,
-    ],
-    queryFn: ({ pageParam }) =>
-      API.search({
+  const { data, isFetching, isFetchingNextPage, hasNextPage, isError, error } =
+    useInfiniteQuery({
+      queryKey: [
+        "search",
         search,
-        namespaces,
-        projects,
-        take: 20,
-        nextToken: pageParam,
-      }),
-    initialPageParam: "" as string | null,
-    getNextPageParam: (lastPage) => lastPage.nextToken,
-    enabled: search.length >= 3,
-  });
-  if (status === "pending") {
-    return <span>Loading...</span>;
+        "projects",
+        ...projectNames,
+        "groups",
+        ...groupNames,
+        "users",
+        ...userNames,
+      ],
+      queryFn: ({ pageParam }) =>
+        API.search({
+          search,
+          namespaces,
+          projects,
+          take: 20,
+          nextToken: pageParam,
+        }),
+      initialPageParam: "" as string | null,
+      getNextPageParam: (lastPage) => lastPage.nextToken,
+      enabled: search.length >= 3,
+    });
+
+  if (isError) {
+    return (
+      <ErrorLoadingDataNotice
+        errorMessage={error.message}
+        errorName={error.name}
+      />
+    );
   }
 
-  if (status === "error") {
-    return <span>Loading...</span>;
-  }
   return (
     <div className="flex flex-col gap-8 w-full">
       {data &&
@@ -96,6 +102,76 @@ function SearchResults() {
               ))}
           </React.Fragment>
         ))}
+      {(isFetchingNextPage || isFetching) && <LoadingMoreDataNotice />}
+      {!isFetchingNextPage && !hasNextPage && !isFetching && (
+        <AllResultsLoadedNotice />
+      )}
     </div>
+  );
+}
+
+function LoadingMoreDataNotice() {
+  return (
+    <Notice
+      level="tip"
+      icon={
+        <motion.div
+          animate={{ rotate: 360 }}
+          transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
+        >
+          <Loader2 className="h-5 w-5" />
+        </motion.div>
+      }
+    >
+      <div className="space-y-2">
+        <p className="font-semibold">Loading More Data</p>
+        <motion.p
+          initial={{ opacity: 0.5 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 1, repeat: Infinity, repeatType: "reverse" }}
+        >
+          Please wait while we fetch more results for you...
+        </motion.p>
+      </div>
+    </Notice>
+  );
+}
+
+function AllResultsLoadedNotice() {
+  return (
+    <Notice level="tip" icon={<CheckCircle className="h-5 w-5" />}>
+      <div className="space-y-2">
+        <p className="font-semibold">All Results Loaded</p>
+        <p>
+          You&apos;ve reached the end of the list. All available results have
+          been displayed.
+        </p>
+      </div>
+    </Notice>
+  );
+}
+
+function ErrorLoadingDataNotice({
+  errorMessage,
+  errorName,
+}: {
+  errorMessage: string;
+  errorName: string;
+}) {
+  return (
+    <Notice level="error" icon={<AlertOctagon className="h-5 w-5" />}>
+      <motion.div
+        initial={{ opacity: 0, y: -10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.3 }}
+        className="space-y-2"
+      >
+        <p className="font-semibold">Error Loading Data: {errorName}</p>
+        <p>
+          An error occurred while fetching the data. Please try again later.
+        </p>
+        <p className="text-sm italic">Error details: {errorMessage}</p>
+      </motion.div>
+    </Notice>
   );
 }

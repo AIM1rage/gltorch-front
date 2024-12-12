@@ -8,18 +8,18 @@ import { Input } from "../ui/input";
 import { Button } from "../ui/button";
 import useAuthStore from "@/store/auth";
 
-export default function Notices() {
+export default function AppNotices() {
   const { token } = useAuthStore();
   const usingPAT = token?.startsWith("glpat");
   if (token === "notok-en") {
     return (
-      <div className="flex flex-col">
+      <div className="flex flex-col gap-8">
         <AccessTokenNotice />
       </div>
     );
   } else if (usingPAT) {
     return (
-      <div className="flex flex-col">
+      <div className="flex flex-col gap-8">
         <DestroyTokenNotice />
       </div>
     );
