@@ -125,7 +125,7 @@ function SearchResults() {
           <React.Fragment key={i}>
             {group &&
               group.values.map((result, gi) => (
-                <div ref={lastElementRef} key={result.id + i + gi}>
+                <div ref={lastElementRef} key={result.id + gi + i}>
                   <SearchResult {...result} searchFor={search} />
                 </div>
               ))}
