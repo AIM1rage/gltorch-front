@@ -7,4 +7,5 @@ export type SearchResult = {
   data: string;
   startline: number;
   project: Project;
+  webUrl: string;
 };

@@ -16,16 +16,11 @@ import {
   GitGraph,
 } from "lucide-react";
 import sanitizeHtml from "sanitize-html";
-import { Project } from "@/types/project";
 import { Link } from "../ui/link";
+import { SearchResult as SRes } from "@/types/search_result";
 
-export type SearchResultProps = {
-  data: string;
-  startline: number;
+export type SearchResultProps = SRes & {
   searchFor: string;
-  fileName: string;
-  project: Project;
-  path: string;
 };
 
 export function SearchResult({
@@ -35,6 +30,7 @@ export function SearchResult({
   fileName,
   project,
   path,
+  webUrl,
 }: SearchResultProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [copied, setCopied] = useState(false);
@@ -108,10 +104,14 @@ export function SearchResult({
         <div className="flex flex-row items-center space-x-4 font-mono">
           <GitGraph className="h-4 w-4 text-muted-foreground" />
           <span className="truncate text-ellipsis">
-            <Link href={project.webUrl}>{project.pathWithNamespace}</Link>
+            <Link href={project.webUrl} className="text-foreground">
+              {project.pathWithNamespace}
+            </Link>
           </span>
           <File className="h-4 w-4 text-muted-foreground" />
-          <span>{fileName}</span>
+          <Link href={webUrl} className="text-foreground">
+            {fileName}
+          </Link>
           <Button variant="outline" size="sm" onClick={copyToClipboard}>
             {copied ? (
               <Check className="h-3 w-3" />
