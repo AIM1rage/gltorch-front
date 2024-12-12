@@ -43,7 +43,7 @@ class Real implements GLTorchApi {
 
   constructor() {
     this.axios = axios.create({
-      baseURL: process.env.NEXT_PUBLIC_API_URL,
+      baseURL: process.env.PUBLIC_API_URL,
       timeout: 6000,
     });
 

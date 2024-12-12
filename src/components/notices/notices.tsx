@@ -111,7 +111,7 @@ function AccessTokenNotice() {
           your GitLab Personal Access Token.{" "}
           <Link
             href={
-              process.env.NEXT_PUBLIC_GITLAB_URL +
+              process.env.PUBLIC_GITLAB_URL +
               "-/user_settings/personal_access_tokens"
             }
             variant="prominent"
