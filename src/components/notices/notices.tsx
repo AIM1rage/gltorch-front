@@ -7,25 +7,41 @@ import { Link } from "@/components/ui/link";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
 import useAuthStore from "@/store/auth";
+import { useSearchStore } from "@/store/search";
+import { useFilterStore } from "@/store/filters";
 
 export default function AppNotices() {
   const { token } = useAuthStore();
   const usingPAT = token?.startsWith("glpat");
-  if (token === "notok-en") {
-    return (
-      <div className="flex flex-col gap-8">
-        <AccessTokenNotice />
-      </div>
-    );
-  } else if (usingPAT) {
-    return (
-      <div className="flex flex-col gap-8">
-        <DestroyTokenNotice />
-      </div>
-    );
-  }
 
-  return <></>;
+  const { search } = useSearchStore();
+  const { namespaces, projects } = useFilterStore();
+
+  return (
+    <div className="flex flex-col gap-8">
+      {token === "notok-en" && <AccessTokenNotice />}
+      {usingPAT && <DestroyTokenNotice />}
+      {search != "" && namespaces.length == 0 && projects.length == 0 && (
+        <SearchWithoutFiltersNotice />
+      )}
+    </div>
+  );
+}
+
+function SearchWithoutFiltersNotice() {
+  return (
+    <Notice level="warning" icon={<AlertTriangle className="h-5 w-5" />}>
+      <div className="space-y-4">
+        <div>
+          <p className="font-semibold">Searching Without Filters</p>
+          <p>
+            Searching with empty filters is not yet suported, and it will not
+            return any results. Try adding at least one project or namespace.
+          </p>
+        </div>
+      </div>
+    </Notice>
+  );
 }
 
 function DestroyTokenNotice() {
