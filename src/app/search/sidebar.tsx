@@ -11,6 +11,7 @@ import { Label } from "@/components/ui/label";
 import { NamespacesFilter } from "@/components/filter/namespaces";
 import Link from "next/link";
 import { AppRoute } from "@/constants/approute";
+import { ModeToggle } from "@/components/ui/theme-provider";
 
 export function SearchSidebar() {
   return (
@@ -43,6 +44,9 @@ export function SearchSidebar() {
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
+        <div className="absolute bottom-4 left-4">
+          <ModeToggle />
+        </div>
       </SidebarContent>
     </Sidebar>
   );

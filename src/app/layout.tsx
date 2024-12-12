@@ -3,6 +3,7 @@ import "./globals.css";
 import Store from "@/app/store";
 import { GeistSans } from "geist/font/sans";
 import { GeistMono } from "geist/font/mono";
+import { ThemeProvider } from "next-themes";
 
 export const metadata: Metadata = {
   title: "gltorch",
@@ -15,11 +16,22 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${GeistSans.variable} ${GeistMono.variable}`}>
+    <html
+      lang="en"
+      className={`${GeistSans.variable} ${GeistMono.variable}`}
+      suppressHydrationWarning
+    >
       <body
         className={`${GeistSans.variable} ${GeistMono.variable} antialiased font-sans text-sm`}
       >
-        <Store>{children}</Store>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          <Store>{children}</Store>
+        </ThemeProvider>
       </body>
     </html>
   );

@@ -52,7 +52,7 @@ export function SearchResult({
       const lineNumber = startline + index;
       const highlightedLine = line.replace(
         searchRegex,
-        '<mark class="bg-primary/40 text-primary-foreground font-medium">$1</mark>',
+        '<mark class="bg-primary/40 dark:bg-primary/80 text-primary-foreground font-medium">$1</mark>',
       );
 
       return (
@@ -120,7 +120,7 @@ export function SearchResult({
     const searchRegex = new RegExp(`(${sanSearch})`, "gi");
     const highlightedName = sanName.replace(
       searchRegex,
-      '<mark class="bg-primary/40 text-primary-foreground font-medium">$1</mark>',
+      '<mark class="bg-primary/40 dark:bg-primary/80 text-primary-foreground font-medium">$1</mark>',
     );
 
     return <span dangerouslySetInnerHTML={{ __html: highlightedName }}></span>;
