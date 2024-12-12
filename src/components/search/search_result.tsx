@@ -95,7 +95,7 @@ export function SearchResult({
   const hasMoreLines = totalLines > visibleLines.length;
 
   const copyToClipboard = () => {
-    navigator.clipboard.writeText(path).then(() => {
+    navigator.clipboard.writeText(project.webUrl + path).then(() => {
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     });

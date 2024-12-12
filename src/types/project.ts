@@ -5,4 +5,5 @@ export type Project = {
   path: string;
   pathWithNamespace: string;
   parent: Namespace;
+  webUrl: string;
 };
