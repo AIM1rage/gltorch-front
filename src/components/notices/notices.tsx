@@ -24,7 +24,28 @@ export default function AppNotices() {
       {search != "" && namespaces.length == 0 && projects.length == 0 && (
         <SearchWithoutFiltersNotice />
       )}
+      <SmallScreenNotice />
     </div>
+  );
+}
+
+function SmallScreenNotice() {
+  return (
+    <Notice
+      className="max-sm:block hidden"
+      level="error"
+      icon={<AlertCircle className="h-5 w-5" />}
+    >
+      <div className="space-y-4">
+        <div>
+          <p className="font-semibold">Small Screens are not yet Supported</p>
+          <p>
+            Small screens (and mobile phones, mobile browsers) are not fully
+            supported yet. Expect breaking functionality and/or adaptivity.
+          </p>
+        </div>
+      </div>
+    </Notice>
   );
 }
 
