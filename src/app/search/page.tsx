@@ -35,7 +35,7 @@ export default function Page() {
         </Button>
         <SearchBar className="w-full" />
       </div>
-      <div className="pr-8 pl-6 py-6">
+      <div className="pr-8 pl-6 py-6 flex flex-col gap-8">
         <Notices />
         <SearchResults />
       </div>

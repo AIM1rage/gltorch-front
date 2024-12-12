@@ -1,16 +1,17 @@
-"use client";
-import React from "react";
 import { Card } from "@/components/ui/card";
 import { AlertCircle, AlertTriangle, Info } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { motion } from "framer-motion";
 
 type NoticeLevel = "tip" | "warning" | "error";
 
-interface NoticeProps {
+export interface NoticeProps {
   level: NoticeLevel;
   children: React.ReactNode;
   className?: string;
   icon?: React.ReactNode;
+  duration?: number; // in milliseconds
+  onComplete?: () => void;
 }
 
 const levelStyles: Record<NoticeLevel, string> = {
@@ -27,17 +28,48 @@ const levelIcons: Record<NoticeLevel, React.ReactNode> = {
   error: <AlertCircle className="h-5 w-5" />,
 };
 
-export function Notice({ level, children, className, icon }: NoticeProps) {
+const timeBarColors: Record<NoticeLevel, string> = {
+  tip: "bg-green-500",
+  warning: "bg-yellow-500",
+  error: "bg-red-500",
+};
+
+export function Notice({
+  level,
+  children,
+  className,
+  icon,
+  duration,
+  onComplete,
+}: NoticeProps) {
   return (
-    <Card
-      className={cn(
-        "flex items-start p-4 border-l-4",
-        levelStyles[level],
-        className,
-      )}
+    <motion.div
+      initial={{ opacity: 0, y: 50 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -50 }}
+      transition={{ duration: 0.3 }}
     >
-      <div className="mr-3 mt-1">{icon || levelIcons[level]}</div>
-      <div>{children}</div>
-    </Card>
+      <Card
+        className={cn(
+          "flex flex-col items-start p-4 border-l-4 overflow-hidden",
+          levelStyles[level],
+          className,
+        )}
+      >
+        <div className="flex items-start w-full">
+          <div className="mr-3 mt-1">{icon || levelIcons[level]}</div>
+          <div className="flex-grow">{children}</div>
+        </div>
+        {duration && (
+          <motion.div
+            className={cn("h-1 w-full mt-2", timeBarColors[level])}
+            initial={{ width: "100%" }}
+            animate={{ width: 0 }}
+            transition={{ duration: duration / 1000, ease: "linear" }}
+            onAnimationComplete={onComplete}
+          />
+        )}
+      </Card>
+    </motion.div>
   );
 }
