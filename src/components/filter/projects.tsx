@@ -48,16 +48,18 @@ export function ProjectFilter({ inputID }: { inputID: string }) {
 
   const { data, isFetching, isError, isFetched } = useQuery({
     queryKey: ["projects", search],
-    queryFn: () => {
+    staleTime: 200000,
+    queryFn: async () => {
       if (search.length < 3) {
         return Promise.resolve([]);
       }
 
-      return API.projects({
+      const res = await API.projects({
         search,
         take: 20,
         nextToken: "",
-      }).then((res) => res.values);
+      });
+      return res.values;
     },
   });
 
@@ -115,10 +117,12 @@ export function ProjectFilter({ inputID }: { inputID: string }) {
                 debouncedSearch(value);
                 setInput(value);
               }}
-              onBlur={() => setTimeout(() => {
-                setIsOpened(false);
-                setInput("");
-              }, 1000)}
+              onBlur={() =>
+                setTimeout(() => {
+                  setIsOpened(false);
+                  setInput("");
+                }, 1000)
+              }
               placeholder="Add a project"
               className="ml-2 flex-1 bg-transparent outline-none placeholder:text-muted-foreground"
             />

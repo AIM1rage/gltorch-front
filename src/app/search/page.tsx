@@ -69,6 +69,7 @@ function SearchResults() {
         "users",
         ...userNames,
       ],
+      staleTime: 20000,
       queryFn: ({ pageParam }) =>
         API.search({
           search,
