@@ -9,7 +9,7 @@ const linkVariants = cva(
   {
     variants: {
       variant: {
-        default: "text-primary underline-offset-4 hover:underline",
+        default: "text-primary-foreground underline-offset-4 hover:underline",
         button: "bg-primary text-primary-foreground hover:bg-primary/90",
         destructive: "text-destructive hover:text-destructive/90",
         prominent:
