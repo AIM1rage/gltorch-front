@@ -82,12 +82,20 @@ export function SearchResult({
     };
   }, [data, startline, searchFor]);
 
-  const visibleLines = isOpen
-    ? highlightedLines
-    : highlightedLines.slice(
-        Math.max(firstLineWithSearch - 2, 0),
-        Math.min(firstLineWithSearch + 3, highlightedLines.length),
-      );
+  let visibleLines;
+  if (firstLineWithSearch >= 0) {
+    visibleLines = isOpen
+      ? highlightedLines
+      : highlightedLines.slice(
+          Math.max(firstLineWithSearch - 2, 0),
+          Math.min(firstLineWithSearch + 3, highlightedLines.length),
+        );
+  } else {
+    visibleLines = highlightedLines.slice(
+      0,
+      Math.min(5, highlightedLines.length),
+    );
+  }
 
   const hasMoreLines = totalLines > visibleLines.length;
 
