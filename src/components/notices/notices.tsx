@@ -73,7 +73,10 @@ function AccessTokenNotice() {
           OpenID Connect functionality is still unavailable, so please enter
           your GitLab Personal Access Token.{" "}
           <Link
-            href="https://search-project.gitlab.yandexcloud.net/-/user_settings/personal_access_tokens"
+            href={
+              process.env.NEXT_PUBLIC_GITLAB_URL +
+              "-/user_settings/personal_access_tokens"
+            }
             variant="prominent"
           >
             You can get one here
