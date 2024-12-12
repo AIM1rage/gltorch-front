@@ -18,6 +18,12 @@ import {
 import sanitizeHtml from "sanitize-html";
 import { Link } from "../ui/link";
 import { SearchResult as SRes } from "@/types/search_result";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "../ui/tooltip";
 
 export type SearchResultProps = SRes & {
   searchFor: string;
@@ -62,6 +68,7 @@ export function SearchResult({
           </span>
           <pre className="flex-1 overflow-x-auto text-wrap">
             <code
+              className="break-all"
               dangerouslySetInnerHTML={{
                 __html: highlightedLine,
               }}
@@ -128,25 +135,48 @@ export function SearchResult({
 
   return (
     <div className="flex-1 w-full border rounded-md overflow-hidden bg-background">
-      <div className="px-4 py-3 border-b flex items-center">
+      <div className="px-4 py-3 border-b flex">
         <div className="flex flex-row items-center space-x-4 font-mono">
-          <GitGraph className="h-4 w-4 text-muted-foreground" />
-          <span className="truncate text-ellipsis">
-            <Link href={project.webUrl} className="text-foreground">
-              <span>{project.pathWithNamespace}</span>
-            </Link>
-          </span>
-          <File className="h-4 w-4 text-muted-foreground" />
-          <Link href={webUrl} className="text-foreground">
-            {highlightedFileName}
+          <Link href={project.webUrl} className="text-foreground">
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger className="truncate text-ellipsis flex flex-row flex-wrap gap-4">
+                  <GitGraph className="h-4 w-4 text-muted-foreground" />
+                  {project.pathWithNamespace}
+                </TooltipTrigger>
+                <TooltipContent>
+                  <span>Open Project</span>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
           </Link>
-          <Button variant="outline" size="sm" onClick={copyToClipboard}>
-            {copied ? (
-              <Check className="h-3 w-3" />
-            ) : (
-              <Copy className="h-3 w-3" />
-            )}
-          </Button>
+          <Link href={webUrl}>
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger className="text-foreground truncate text-ellipsis flex flex-row gap-4 flex-wrap">
+                  <File className="h-4 w-4 text-muted-foreground" />
+                  <span className="max-lg:hidden">{highlightedFileName}</span>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <span>Open File</span>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          </Link>
+          <TooltipProvider>
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <Button variant="outline" size="sm" onClick={copyToClipboard}>
+                  {copied ? (
+                    <Check className="h-3 w-3" />
+                  ) : (
+                    <Copy className="h-3 w-3" />
+                  )}
+                </Button>
+              </TooltipTrigger>
+              <TooltipContent>Copy Path to File</TooltipContent>
+            </Tooltip>
+          </TooltipProvider>
         </div>
       </div>
       <Collapsible open={isOpen} onOpenChange={setIsOpen}>
