@@ -14,6 +14,8 @@ import { useForm } from "react-hook-form";
 import * as z from "zod";
 import { useSearchStore } from "@/store/search";
 import { cn } from "@/lib/utils";
+import { motion, AnimatePresence } from "framer-motion";
+import { Button } from "../ui/button";
 
 const formSchema = z.object({
   search: z.string().min(3, {
@@ -24,9 +26,11 @@ const formSchema = z.object({
 export default function SearchBar({
   onSubmit,
   className,
+  isSearching = false,
 }: {
   onSubmit?: () => never;
   className?: string;
+  isSearching?: boolean;
 }) {
   const { search, setSearch } = useSearchStore();
 
@@ -45,6 +49,11 @@ export default function SearchBar({
     }
   }
 
+  const dotVariants = {
+    initial: { y: 0 },
+    animate: { y: -5 },
+  };
+
   return (
     <Form {...form}>
       <form
@@ -61,10 +70,80 @@ export default function SearchBar({
                   <Search className="absolute left-2 top-2.5 h-5 w-5 text-muted-foreground text-base" />
                   <Input
                     placeholder="Search..."
-                    className="pl-8"
+                    className="pl-8 pr-24"
                     autoComplete="off"
                     {...field}
                   />
+                  <div className="absolute right-1 top-1">
+                    <Button
+                      type="submit"
+                      size="sm"
+                      className="h-8 min-w-[80px]"
+                      disabled={isSearching}
+                    >
+                      <span className="relative">
+                        <AnimatePresence mode="wait" initial={false}>
+                          {isSearching ? (
+                            <motion.span
+                              key="dots"
+                              initial={{ opacity: 0 }}
+                              animate={{ opacity: 1 }}
+                              exit={{ opacity: 0 }}
+                              className="absolute inset-0 flex items-center justify-center"
+                            >
+                              <motion.span
+                                variants={dotVariants}
+                                initial="initial"
+                                animate="animate"
+                                transition={{
+                                  repeat: Infinity,
+                                  duration: 0.6,
+                                  repeatType: "reverse",
+                                }}
+                              >
+                                •
+                              </motion.span>
+                              <motion.span
+                                variants={dotVariants}
+                                initial="initial"
+                                animate="animate"
+                                transition={{
+                                  repeat: Infinity,
+                                  duration: 0.6,
+                                  delay: 0.2,
+                                  repeatType: "reverse",
+                                }}
+                              >
+                                •
+                              </motion.span>
+                              <motion.span
+                                variants={dotVariants}
+                                initial="initial"
+                                animate="animate"
+                                transition={{
+                                  repeat: Infinity,
+                                  duration: 0.6,
+                                  delay: 0.4,
+                                  repeatType: "reverse",
+                                }}
+                              >
+                                •
+                              </motion.span>
+                            </motion.span>
+                          ) : (
+                            <motion.span
+                              key="search"
+                              initial={{ opacity: 0 }}
+                              animate={{ opacity: 1 }}
+                              exit={{ opacity: 0 }}
+                            >
+                              Search
+                            </motion.span>
+                          )}
+                        </AnimatePresence>
+                      </span>
+                    </Button>
+                  </div>
                 </div>
               </FormControl>
               <FormMessage />

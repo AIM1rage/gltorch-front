@@ -13,7 +13,7 @@ import { Group } from "@/types/group";
 import { User } from "@/types/user";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { AlertOctagon, CheckCircle, Loader2, PanelLeft } from "lucide-react";
-import React, { useCallback, useRef } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { Notice } from "@/components/ui/notice";
 import { motion } from "framer-motion";
 
@@ -24,6 +24,7 @@ const Notices = dynamic(() => import("@/components/notices/notices"), {
 export default function Page() {
   const { toggleSidebar } = useSidebar();
   const isMobile = useIsMobile();
+  const [isSearching, setSearching] = useState(false);
 
   return (
     <div className="w-full flex flex-col">
@@ -35,17 +36,23 @@ export default function Page() {
         >
           <PanelLeft />
         </Button>
-        <SearchBar className="w-full" />
+        <SearchBar className="w-full" isSearching={isSearching} />
       </div>
       <div className="pr-8 pl-6 py-6 flex flex-col gap-8">
         <Notices />
-        <SearchResults />
+        <SRMemo setSearching={setSearching} />
       </div>
     </div>
   );
 }
 
-function SearchResults() {
+const SRMemo = React.memo(SearchResults, () => true);
+
+function SearchResults({
+  setSearching,
+}: {
+  setSearching: (b: boolean) => void;
+}) {
   const { search } = useSearchStore();
   const { namespaces, projects } = useFilterStore();
 
@@ -108,6 +115,10 @@ function SearchResults() {
     },
     [fetchNextPage, hasNextPage, isFetching, isLoading],
   );
+
+  useEffect(() => {
+    setSearching(isFetching || isFetchingNextPage);
+  });
 
   if (isError) {
     return (
