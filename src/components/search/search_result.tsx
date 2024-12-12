@@ -130,7 +130,12 @@ export function SearchResult({
       '<mark class="bg-primary/40 dark:bg-primary/80 text-primary-foreground font-medium">$1</mark>',
     );
 
-    return <span dangerouslySetInnerHTML={{ __html: highlightedName }}></span>;
+    return (
+      <span
+        className="break-all"
+        dangerouslySetInnerHTML={{ __html: highlightedName }}
+      ></span>
+    );
   }, [fileName, searchFor]);
 
   return (
