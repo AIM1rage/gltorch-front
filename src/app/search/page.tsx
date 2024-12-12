@@ -13,7 +13,7 @@ import { Group } from "@/types/group";
 import { User } from "@/types/user";
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { AlertOctagon, CheckCircle, Loader2, PanelLeft } from "lucide-react";
-import React from "react";
+import React, { useCallback, useRef } from "react";
 import { Notice } from "@/components/ui/notice";
 import { motion } from "framer-motion";
 
@@ -57,31 +57,57 @@ function SearchResults() {
   const groupNames = groups.map((g) => g.path);
   const userNames = users.map((u) => u.username);
 
-  const { data, isFetching, isFetchingNextPage, hasNextPage, isError, error } =
-    useInfiniteQuery({
-      queryKey: [
-        "search",
+  const {
+    data,
+    isLoading,
+    isFetching,
+    isFetchingNextPage,
+    hasNextPage,
+    isError,
+    error,
+    fetchNextPage,
+  } = useInfiniteQuery({
+    queryKey: [
+      "search",
+      search,
+      "projects",
+      ...projectNames,
+      "groups",
+      ...groupNames,
+      "users",
+      ...userNames,
+    ],
+    staleTime: 20000,
+    queryFn: ({ pageParam }) =>
+      API.search({
         search,
-        "projects",
-        ...projectNames,
-        "groups",
-        ...groupNames,
-        "users",
-        ...userNames,
-      ],
-      staleTime: 20000,
-      queryFn: ({ pageParam }) =>
-        API.search({
-          search,
-          namespaces,
-          projects,
-          take: 20,
-          nextToken: pageParam,
-        }),
-      initialPageParam: "" as string | null,
-      getNextPageParam: (lastPage) => lastPage.nextToken,
-      enabled: search.length >= 3,
-    });
+        namespaces,
+        projects,
+        take: 20,
+        nextToken: pageParam,
+      }),
+    initialPageParam: "" as string | null,
+    getNextPageParam: (lastPage) => lastPage.nextToken,
+    enabled: search.length >= 3,
+  });
+
+  const observer = useRef<IntersectionObserver>();
+  useCallback(
+    (node: HTMLDivElement) => {
+      if (isLoading) return;
+
+      if (observer.current) observer.current.disconnect();
+
+      observer.current = new IntersectionObserver((entries) => {
+        if (entries[0].isIntersecting && hasNextPage && !isFetching) {
+          fetchNextPage();
+        }
+      });
+
+      if (node) observer.current.observe(node);
+    },
+    [fetchNextPage, hasNextPage, isFetching, isLoading],
+  );
 
   if (isError) {
     return (
