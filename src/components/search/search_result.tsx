@@ -98,6 +98,26 @@ export function SearchResult({
     });
   };
 
+  const highlightedFileName = useMemo(() => {
+    const sanSearch = sanitizeHtml(searchFor, {
+      allowedTags: [],
+      allowedAttributes: {},
+    });
+
+    const sanName: string = sanitizeHtml(fileName, {
+      allowedTags: [],
+      allowedAttributes: {},
+    });
+
+    const searchRegex = new RegExp(`(${sanSearch})`, "gi");
+    const highlightedName = sanName.replace(
+      searchRegex,
+      '<mark class="bg-primary/40 text-primary-foreground font-medium">$1</mark>',
+    );
+
+    return <span dangerouslySetInnerHTML={{ __html: highlightedName }}></span>;
+  }, [fileName, searchFor]);
+
   return (
     <div className="flex-1 w-full border rounded-md overflow-hidden bg-background">
       <div className="px-4 py-3 border-b flex items-center">
@@ -105,12 +125,12 @@ export function SearchResult({
           <GitGraph className="h-4 w-4 text-muted-foreground" />
           <span className="truncate text-ellipsis">
             <Link href={project.webUrl} className="text-foreground">
-              {project.pathWithNamespace}
+              <span>{project.pathWithNamespace}</span>
             </Link>
           </span>
           <File className="h-4 w-4 text-muted-foreground" />
           <Link href={webUrl} className="text-foreground">
-            {fileName}
+            {highlightedFileName}
           </Link>
           <Button variant="outline" size="sm" onClick={copyToClipboard}>
             {copied ? (
