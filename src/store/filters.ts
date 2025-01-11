@@ -3,10 +3,9 @@ import { Project } from "@/types/project";
 import { create } from "zustand";
 import { isEqual } from "lodash";
 
-function areEqual(a: Namespace, b: Namespace) {
-    if ((a.user || a.group)!.id === (b.user || b.group)!.id)
-        return true;
-    return isEqual(a, b);
+export function nsEqual(a: Namespace, b: Namespace) {
+  if (a.user && b.user && a.user.id === b.user.id) return true;
+  return isEqual(a, b);
 }
 
 type FilterStore = {
@@ -20,14 +19,14 @@ type FilterStore = {
 // TODO this is the ugliest code in our project and it must be rewritten
 export const useFilterStore = create<FilterStore>()((set) => ({
   projects: new Array<Project>(),
-  namespaces: new Array<Namespace>(), 
+  namespaces: new Array<Namespace>(),
 
   toggleNamespace: (ns: Namespace) =>
     set((state) => {
-      if (state.namespaces.some((sns) => areEqual(sns, ns))) {
+      if (state.namespaces.some((sns) => nsEqual(sns, ns))) {
         return {
-          namespaces: state.namespaces.filter((sns) => !areEqual(sns, ns)),
-          projects: state.projects.filter((p) => !areEqual(p.parent, ns)),
+          namespaces: state.namespaces.filter((sns) => !nsEqual(sns, ns)),
+          projects: state.projects.filter((p) => !nsEqual(p.parent, ns)),
         };
       }
 
@@ -42,7 +41,7 @@ export const useFilterStore = create<FilterStore>()((set) => ({
         return { projects: state.projects.filter((p) => p.id !== project.id) };
       }
 
-      if (state.namespaces.some((ns) => areEqual(ns, project.parent))) {
+      if (state.namespaces.some((ns) => nsEqual(ns, project.parent))) {
         return { projects: [...state.projects, project] };
       }
 
