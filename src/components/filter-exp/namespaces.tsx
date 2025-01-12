@@ -72,7 +72,7 @@ export function NamespacesFilter({ className }: { className?: string }) {
               />
               <Label
                 htmlFor={`checkbox-${id}`}
-                className="text-sm font-medium leading-none cursor-pointer select-none truncate max-w-[calc(100%-6rem)]"
+                className="text-sm font-medium leading-none cursor-pointer select-none truncate max-w-[calc(71%)]"
                 title={label}
               >
                 {label}
@@ -81,7 +81,7 @@ export function NamespacesFilter({ className }: { className?: string }) {
           );
         })}
         {hasNextPage && !isFetching && (
-          <Button className="my-2 w-9/12" onClick={() => fetchNextPage()}>
+          <Button className="my-2 w-[calc(82%)]" onClick={() => fetchNextPage()}>
             Load more
           </Button>
         )}
