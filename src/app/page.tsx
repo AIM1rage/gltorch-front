@@ -16,6 +16,9 @@ import { AlertOctagon, CheckCircle, Loader2, PanelLeft } from "lucide-react";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { Notice } from "@/components/ui/notice";
 import { motion } from "framer-motion";
+import { redirect, useSearchParams } from "next/navigation";
+import { OAuthApi } from "@/api/oauthApi";
+import useAuthStore from "@/store/auth";
 
 const Notices = dynamic(() => import("@/components/notices/notices"), {
   ssr: false,
@@ -26,6 +29,14 @@ export default function Page() {
   const isMobile = useIsMobile();
   const [isSearching, setSearching] = useState(false);
 
+  const queryParams = useSearchParams();
+
+  const { token, refreshToken, setTokens } = useAuthStore();
+
+  if (queryParams.get("code") !== undefined){
+    OAuthApi.changeCode(queryParams.get("code")!).then( (res) => setTokens(res.access_token, res.refresh_token))
+  }
+  
   return (
     <div className="w-full flex flex-col">
       <div className="flex flex-row w-full flex-1 gap-4 py-6 px-6 border-b border-border justify-center">

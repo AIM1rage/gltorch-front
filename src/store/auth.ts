@@ -3,16 +3,19 @@ import Cookies from "js-cookie";
 
 type AuthStore = {
   token?: string;
-  setToken: (token?: string) => void;
+  refreshToken?: string; 
+  setTokens: (token?: string, refreshToken?: string) => void;
 };
 
 const useAuthStore = create<AuthStore>(
   (set) =>
     ({
       token: Cookies.get("authToken") || "notok-en",
-      setToken: (token?: string) => {
+      refreshToken: Cookies.get("refreshToken") || "notok-en",
+      setTokens: (token?: string, refreshToken?: string) => {
         Cookies.set("authToken", token ?? "notok-en", { expires: 365 });
-        set({ token });
+        Cookies.set("refreshToken", refreshToken ?? "notok-en", { expires: 365 });
+        set({ token, refreshToken });
       },
     }) as AuthStore,
 );
