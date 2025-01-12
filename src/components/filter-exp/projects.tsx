@@ -94,7 +94,7 @@ export function ProjectsFilter({ className }: { className?: string }) {
           );
         })}
         {hasNextPage && !isFetching && (
-          <Button className="my-2 w-full" onClick={() => fetchNextPage()}>
+          <Button className="my-2 w-9/12" onClick={() => fetchNextPage()}>
             Load more
           </Button>
         )}
