@@ -11,7 +11,7 @@ import { useFilterStore } from "@/store/filters";
 import { useSearchStore } from "@/store/search";
 import { Group } from "@/types/group";
 import { User } from "@/types/user";
-import { useInfiniteQuery } from "@tanstack/react-query";
+import { useInfiniteQuery, useMutation } from "@tanstack/react-query";
 import { AlertOctagon, CheckCircle, Loader2, PanelLeft } from "lucide-react";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { Notice } from "@/components/ui/notice";
@@ -33,8 +33,18 @@ export default function Page() {
 
   const { token, refreshToken, setTokens } = useAuthStore();
 
-  if (queryParams.get("code") !== undefined){
-    OAuthApi.changeCode(queryParams.get("code")!).then( (res) => setTokens(res.access_token, res.refresh_token))
+
+  const mutation = useMutation({
+    mutationFn: (code: string) => OAuthApi.changeCode(code).then( (res) => setTokens(res.access_token, res.refresh_token)),
+    retry: 0,
+  })
+
+  console.log(process.env.NEXT_PUBLIC_OAUTH_URL)
+  console.log(refreshToken);
+
+
+  if (queryParams.get("code") !== undefined && !mutation.isError && !mutation.isPending){
+    mutation.mutate(queryParams.get("code")!);
   }
   
   return (

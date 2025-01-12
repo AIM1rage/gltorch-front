@@ -28,10 +28,10 @@ export type tokenResponse = {
       const res = await this.axios.post<tokenResponse>(
         "/oauth/token",
         {
-          "client_id": process.env.NEXT_PUBLIC_OAUTH_CLIENT_ID,
           "grant_type": "authorization_code",
-          "redirect_uri": process.env.NEXT_PUBLIC_OAUTH_REDIRECT_URI,
           "code": code,
+          "redirect_uri": process.env.NEXT_PUBLIC_OAUTH_REDIRECT_URI,
+          "client_id": process.env.NEXT_PUBLIC_OAUTH_CLIENT_ID,
         },
       )
       return res.data;
