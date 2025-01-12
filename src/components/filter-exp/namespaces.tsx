@@ -72,7 +72,7 @@ export function NamespacesFilter({ className }: { className?: string }) {
               />
               <Label
                 htmlFor={`checkbox-${id}`}
-                className="text-sm font-medium leading-none cursor-pointer select-none truncate max-w-[calc(100%-2rem)]"
+                className="text-sm font-medium leading-none cursor-pointer select-none truncate max-w-[calc(100%-6rem)]"
                 title={label}
               >
                 {label}
