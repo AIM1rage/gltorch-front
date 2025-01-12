@@ -81,7 +81,7 @@ export function NamespacesFilter({ className }: { className?: string }) {
           );
         })}
         {hasNextPage && !isFetching && (
-          <Button className="my-2 w-[calc(82%)]" onClick={() => fetchNextPage()}>
+          <Button className="my-2 w-[82%]" onClick={() => fetchNextPage()}>
             Load more
           </Button>
         )}

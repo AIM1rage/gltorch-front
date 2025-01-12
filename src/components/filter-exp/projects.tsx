@@ -76,7 +76,7 @@ export function ProjectsFilter({ className }: { className?: string }) {
               />
               <Label
                 htmlFor={`checkbox-${id}`}
-                className="text-sm font-medium leading-none cursor-pointer select-none flex-1 truncate max-w-[calc(75%)]"
+                className="text-sm font-medium leading-none cursor-pointer select-none flex-1 truncate max-w-[75%]"
               >
                 <span
                   className={cn(
