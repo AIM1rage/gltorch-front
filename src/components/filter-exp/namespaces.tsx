@@ -1,7 +1,7 @@
 "use client";
 
 import { useInfiniteQuery } from "@tanstack/react-query";
-import React, { useCallback, useEffect } from "react";
+import React from "react";
 import { API } from "@/api/api";
 import { Label } from "@/components/ui/label";
 import { nsEqual, useFilterStore } from "@/store/filters";
@@ -9,50 +9,29 @@ import { cn } from "@/lib/utils";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
-import { Loader2 } from "lucide-react";
+import { Loader2, X } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 
 export function NamespacesFilter({ className }: { className?: string }) {
   const [search, setSearch] = React.useState("");
   const { namespaces, toggleNamespace } = useFilterStore();
 
-  const {
-    data,
-    fetchNextPage,
-    hasNextPage,
-    refetch,
-    isError,
-    isFetching,
-    isFetchingNextPage,
-  } = useInfiniteQuery({
-    queryKey: ["namespaces", search],
-    staleTime: 2000,
-    queryFn: ({ pageParam }) =>
-      API.namespaces({
-        search,
-        take: 20,
-        nextToken: pageParam,
-      }),
-    initialPageParam: "" as string | null,
-    getNextPageParam: (lastPage) => lastPage.nextToken,
-  });
+  const { data, fetchNextPage, hasNextPage, isError, isFetching } =
+    useInfiniteQuery({
+      queryKey: ["namespaces", search],
+      staleTime: 2000,
+      queryFn: ({ pageParam }) =>
+        API.namespaces({
+          search,
+          take: 20,
+          nextToken: pageParam,
+        }),
+      initialPageParam: "" as string | null,
+      getNextPageParam: (lastPage) => lastPage.nextToken,
+    });
 
   const items = data ? data.pages.flatMap((page) => page.values) : [];
-
-  const handleScroll = useCallback(
-    (event: React.UIEvent<HTMLDivElement>) => {
-      const { scrollTop, scrollHeight, clientHeight } = event.currentTarget;
-      if (scrollHeight - (scrollTop + clientHeight) < 20) {
-        if (hasNextPage && !isFetchingNextPage) {
-          fetchNextPage();
-        }
-      }
-    },
-    [hasNextPage, isFetchingNextPage, fetchNextPage],
-  );
-
-  useEffect(() => {
-    refetch();
-  }, [search, refetch]);
 
   return (
     <div className={cn("flex flex-col space-y-2", className)}>
@@ -62,9 +41,28 @@ export function NamespacesFilter({ className }: { className?: string }) {
         value={search}
         onChange={(e) => setSearch(e.target.value)}
       />
-      <ScrollArea className="h-[300px] px-2" onScroll={handleScroll}>
+      <div className="flex flex-wrap gap-2">
+        {namespaces.map((ns) => {
+          const id = (ns.group && ns.group.id) || "@" + ns.user?.id;
+          const label = (ns.group && ns.group.path) || "@" + ns.user?.username;
+          return (
+            <Badge
+              key={id}
+              variant="secondary"
+              className="flex items-center gap-1 cursor-pointer"
+              onClick={() => toggleNamespace(ns)}
+            >
+              {label}
+              <X className="h-3 w-3" />
+            </Badge>
+          );
+        })}
+      </div>
+      <ScrollArea className="flex flex-col gap-2 h-[300px] px-2">
         {items.map((item) => {
           const id = (item.group && item.group.id) || "@" + item.user?.id;
+          const label =
+            (item.group && item.group.path) || "@" + item.user?.username;
           return (
             <div key={id} className="flex items-center space-x-2 py-2">
               <Checkbox
@@ -74,13 +72,19 @@ export function NamespacesFilter({ className }: { className?: string }) {
               />
               <Label
                 htmlFor={`checkbox-${id}`}
-                className="text-sm font-medium leading-none cursor-pointer select-none"
+                className="text-sm font-medium leading-none cursor-pointer select-none truncate max-w-[calc(100%-2rem)]"
+                title={label}
               >
-                {(item.group && item.group.path) || "@" + item.user?.username}
+                {label}
               </Label>
             </div>
           );
         })}
+        {hasNextPage && !isFetching && (
+          <Button className="my-2 w-full" onClick={() => fetchNextPage()}>
+            Load more
+          </Button>
+        )}
         {isFetching && (
           <div className="flex justify-center items-center py-2">
             <Loader2 className="h-6 w-6 animate-spin" />

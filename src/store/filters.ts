@@ -26,7 +26,6 @@ export const useFilterStore = create<FilterStore>()((set) => ({
       if (state.namespaces.some((sns) => nsEqual(sns, ns))) {
         return {
           namespaces: state.namespaces.filter((sns) => !nsEqual(sns, ns)),
-          projects: state.projects.filter((p) => !nsEqual(p.parent, ns)),
         };
       }
 
@@ -47,7 +46,6 @@ export const useFilterStore = create<FilterStore>()((set) => ({
 
       return {
         projects: [...state.projects, project],
-        namespaces: [...state.namespaces, project.parent],
       };
     }),
 }));

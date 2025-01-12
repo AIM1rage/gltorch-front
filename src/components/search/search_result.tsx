@@ -62,6 +62,7 @@ const binaryExtensions = [
   "7z",
   "tar",
   "gz",
+  "excalidraw",
 ];
 
 function FileHeader({
