@@ -16,7 +16,7 @@ import { AlertOctagon, CheckCircle, Loader2, PanelLeft } from "lucide-react";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { Notice } from "@/components/ui/notice";
 import { motion } from "framer-motion";
-import { redirect, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { OAuthApi } from "@/api/oauthApi";
 import useAuthStore from "@/store/auth";
 
@@ -31,7 +31,7 @@ export default function Page() {
 
   const queryParams = useSearchParams();
 
-  const { token, refreshToken, setTokens } = useAuthStore();
+  const { refreshToken, setTokens } = useAuthStore();
 
 
   const mutation = useMutation({
