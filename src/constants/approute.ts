@@ -1,4 +1,6 @@
 ﻿export enum AppRoute {
     Home = "/",
-    Search = "/search"
+    Search = "/search",
+    OAuth = "/oauth",
+    OAuthLoading = "/oauth-loading",
 }

@@ -11,47 +11,32 @@ import { useFilterStore } from "@/store/filters";
 import { useSearchStore } from "@/store/search";
 import { Group } from "@/types/group";
 import { User } from "@/types/user";
-import { useInfiniteQuery, useMutation } from "@tanstack/react-query";
+import { useInfiniteQuery } from "@tanstack/react-query";
 import { AlertOctagon, CheckCircle, Loader2, PanelLeft } from "lucide-react";
-import React, { Suspense, useCallback, useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import { Notice } from "@/components/ui/notice";
 import { motion } from "framer-motion";
-import { OAuthApi } from "@/api/oauthApi";
 import useAuthStore from "@/store/auth";
-import { useSearchParams } from "next/navigation";
+import { redirect } from "next/navigation";
+import { AppRoute } from "@/constants/approute";
+
 
 const Notices = dynamic(() => import("@/components/notices/notices"), {
   ssr: false,
 });
 
-function Oauth() {
-  const queryParams = useSearchParams();
-
-  const { refreshToken, setTokens } = useAuthStore();
-  const mutation = useMutation({
-    mutationFn: (code: string) => OAuthApi.changeCode(code).then( (res) => setTokens(res.access_token, res.refresh_token)),
-    retry: 0,
-  })
-
-  console.log(process.env.NEXT_PUBLIC_OAUTH_URL)
-  console.log(refreshToken);
-
-
-  if (queryParams.get("code") !== undefined && !mutation.isError && !mutation.isPending){
-    mutation.mutate(queryParams.get("code")!);
-  }
-
-  return (<div></div>);
-}
 
 export default function Page() {
   const { toggleSidebar } = useSidebar();
   const isMobile = useIsMobile();
   const [isSearching, setSearching] = useState(false);
+  const { token } = useAuthStore();
+  if (token === undefined || token === "notok-en"){
+    redirect(AppRoute.OAuth);
+  }
 
   return (
     <div className="w-full flex flex-col">
-      <Suspense><Oauth /></Suspense>
       <div className="flex flex-row w-full flex-1 gap-4 py-6 px-6 border-b border-border justify-center">
         <Button
           className={cn(!isMobile && "hidden")}
