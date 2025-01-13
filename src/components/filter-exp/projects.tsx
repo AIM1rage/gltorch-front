@@ -76,7 +76,7 @@ export function ProjectsFilter({ className }: { className?: string }) {
               />
               <Label
                 htmlFor={`checkbox-${id}`}
-                className="text-sm font-medium leading-none cursor-pointer select-none flex-1 truncate"
+                className="text-sm font-medium leading-none cursor-pointer select-none flex-1 truncate max-w-[75%]"
               >
                 <span
                   className={cn(
@@ -86,7 +86,7 @@ export function ProjectsFilter({ className }: { className?: string }) {
                 >
                   {nsName}
                 </span>
-                <span className="inline-block max-w-[60%] truncate align-bottom">
+                <span className="inline-block max-w-[50%] truncate align-bottom">
                   /{item.path}
                 </span>
               </Label>
@@ -94,7 +94,7 @@ export function ProjectsFilter({ className }: { className?: string }) {
           );
         })}
         {hasNextPage && !isFetching && (
-          <Button className="my-2 w-full" onClick={() => fetchNextPage()}>
+          <Button className="my-2 w-9/12" onClick={() => fetchNextPage()}>
             Load more
           </Button>
         )}
