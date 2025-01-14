@@ -70,7 +70,10 @@ function FileHeader({
   fileName,
   webUrl,
   path,
-}: Pick<SearchResultProps, "project" | "fileName" | "webUrl" | "path">) {
+  highlightText,
+}: Pick<SearchResultProps, "project" | "fileName" | "webUrl" | "path"> & {
+  highlightText: (text: string) => string;
+}) {
   const [copied, setCopied] = React.useState(false);
 
   const copyToClipboard = React.useCallback(() => {
@@ -88,7 +91,11 @@ function FileHeader({
             <Tooltip>
               <TooltipTrigger className="truncate text-ellipsis flex flex-row flex-wrap gap-4">
                 <GitGraph className="h-4 w-4 text-muted-foreground" />
-                {project.pathWithNamespace}
+                <span
+                  dangerouslySetInnerHTML={{
+                    __html: highlightText(project.pathWithNamespace),
+                  }}
+                />
               </TooltipTrigger>
               <TooltipContent>
                 <span>Open Project</span>
@@ -101,7 +108,10 @@ function FileHeader({
             <Tooltip>
               <TooltipTrigger className="text-foreground truncate text-ellipsis flex flex-row gap-4 flex-wrap">
                 <File className="h-4 w-4 text-muted-foreground" />
-                <span className="max-lg:hidden">{fileName}</span>
+                <span
+                  className="max-lg:hidden"
+                  dangerouslySetInnerHTML={{ __html: highlightText(fileName) }}
+                />
               </TooltipTrigger>
               <TooltipContent>
                 <span>Open File</span>
@@ -162,6 +172,12 @@ function LongLinesWarning({ onShowContent }: { onShowContent: () => void }) {
   );
 }
 
+const sanitizeRegex = (str: string) =>
+  str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+const removeGitLabFilters = (str: string) => {
+  return str.replace(/(filename|path|extension):[^\s]+/g, "").trim();
+};
+
 function useFileContent({
   data,
   startline,
@@ -179,10 +195,11 @@ function useFileContent({
         totalLines: 0,
         firstLineWithSearch: -1,
         hasLongLines: false,
+        highlightText: (text: string) => text,
       };
     }
 
-    const sanSearch = sanitizeHtml(searchFor, {
+    const sanSearch = sanitizeHtml(removeGitLabFilters(searchFor), {
       allowedTags: [],
       allowedAttributes: {},
     });
@@ -192,16 +209,20 @@ function useFileContent({
     });
 
     const lines = sanData.split("\n");
-    const searchRegex = new RegExp(`(${sanSearch})`, "gi");
+    const searchRegex = new RegExp(`(${sanitizeRegex(sanSearch)})`, "gi");
+
+    const highlightText = (text: string) => {
+      return text.replace(
+        searchRegex,
+        '<mark class="bg-primary/40 dark:bg-primary/80 text-primary-foreground font-medium">$1</mark>',
+      );
+    };
 
     let longLinesDetected = false;
 
     const highlighted = lines.map((line, index) => {
       const lineNumber = startline + index;
-      const highlightedLine = line.replace(
-        searchRegex,
-        '<mark class="bg-primary/40 dark:bg-primary/80 text-primary-foreground font-medium">$1</mark>',
-      );
+      const highlightedLine = highlightText(line);
 
       if (line.length > 500) {
         longLinesDetected = true;
@@ -225,7 +246,7 @@ function useFileContent({
     });
 
     const firstLineWithSearch = lines.findIndex((line) =>
-      line.toLowerCase().includes(searchFor.toLowerCase()),
+      line.toLowerCase().includes(sanSearch.toLowerCase()),
     );
 
     return {
@@ -233,6 +254,7 @@ function useFileContent({
       totalLines: lines.length,
       firstLineWithSearch: firstLineWithSearch,
       hasLongLines: longLinesDetected,
+      highlightText,
     };
   }, [data, startline, searchFor, isBinaryFile, showBinaryContent]);
 }
@@ -255,14 +277,19 @@ export function SearchResult({
     return extension ? binaryExtensions.includes(extension) : false;
   }, [fileName]);
 
-  const { highlightedLines, totalLines, firstLineWithSearch, hasLongLines } =
-    useFileContent({
-      data,
-      startline,
-      searchFor,
-      isBinaryFile,
-      showBinaryContent,
-    });
+  const {
+    highlightedLines,
+    totalLines,
+    firstLineWithSearch,
+    hasLongLines,
+    highlightText,
+  } = useFileContent({
+    data,
+    startline,
+    searchFor,
+    isBinaryFile,
+    showBinaryContent,
+  });
 
   const visibleLines = useMemo(() => {
     if (firstLineWithSearch >= 0) {
@@ -295,6 +322,7 @@ export function SearchResult({
         fileName={fileName}
         webUrl={webUrl}
         path={path}
+        highlightText={highlightText}
       />
       <Collapsible open={isOpen} onOpenChange={setIsOpen}>
         {isBinaryFile && !showBinaryContent ? (
