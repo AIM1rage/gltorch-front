@@ -28,13 +28,13 @@ const Notices = dynamic(() => import("@/components/notices/notices"), {
 });
 
 function PageComponent() {
-  const { toggleSidebar } = useSidebar();
-  const isMobile = useIsMobile();
-  const [isSearching, setSearching] = useState(false);
-  const [shouldRedirect, setShouldRedirect] = useState(false);
-  const { token, refreshToken, setTokens } = useAuthStore();
+    const { toggleSidebar } = useSidebar();
+    const isMobile = useIsMobile();
+    const [isSearching, setSearching] = useState(false);
+    const [shouldRedirect, setShouldRedirect] = useState(false);
+    const { token, refreshToken, setTokens } = useAuthStore();
 
-  const mutation = useMutation({
+    const mutation = useMutation({
         mutationFn: (token: string) => OAuthApi.retrieveToken(token)
             .catch(async () => {
                 if (refreshToken !== undefined) {
@@ -46,17 +46,20 @@ function PageComponent() {
                 setTokens(undefined, undefined);
             }),
         retry: 0,
-  });
+    });
 
-  useEffect(() => {
-    if (shouldRedirect || token === undefined || token === "notok-en") {
-      redirect(AppRoute.OAuth);
+    const isMutateCalled = useRef(false);
+
+    useEffect(() => {
+        if (shouldRedirect || token === undefined || token === "notok-en") {
+            redirect(AppRoute.OAuth);
+        }
+    }, [shouldRedirect, token]);
+
+    if (token !== undefined && !mutation.isError && !mutation.isPending && !isMutateCalled.current){
+        mutation.mutate(token);
+        isMutateCalled.current = true;
     }
-  }, [shouldRedirect, token]);
-
-  if (token !== undefined && !mutation.isError && !mutation.isPending){
-    mutation.mutate(token);
-  }
   
   return (
       <div className="w-full flex flex-col">
