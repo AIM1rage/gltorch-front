@@ -57,7 +57,7 @@ function PageComponent() {
         }
     }, [shouldRedirect, token, refreshToken, setTokens]);
 
-    if ((token !== undefined || token !== "notok-en") && !mutation.isError && !mutation.isPending && !isMutateCalled.current) {
+    if ((token !== undefined && token !== "notok-en") && !mutation.isError && !mutation.isPending && !isMutateCalled.current) {
         mutation.mutate(token);
         isMutateCalled.current = true;
     }
