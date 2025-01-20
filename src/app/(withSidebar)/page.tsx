@@ -11,7 +11,7 @@ import { useFilterStore } from "@/store/filters";
 import { useSearchStore } from "@/store/search";
 import { Group } from "@/types/group";
 import { User } from "@/types/user";
-import { useInfiniteQuery } from "@tanstack/react-query";
+import {useInfiniteQuery, useMutation} from "@tanstack/react-query";
 import { AlertOctagon, CheckCircle, Loader2, PanelLeft } from "lucide-react";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { Notice } from "@/components/ui/notice";
@@ -20,6 +20,7 @@ import useAuthStore from "@/store/auth";
 import { redirect } from "next/navigation";
 import { AppRoute } from "@/constants/approute";
 import NoSsr from "@/components/noSsr";
+import {OAuthApi} from "@/api/oauthApi";
 
 
 const Notices = dynamic(() => import("@/components/notices/notices"), {
@@ -30,11 +31,33 @@ function PageComponent() {
   const { toggleSidebar } = useSidebar();
   const isMobile = useIsMobile();
   const [isSearching, setSearching] = useState(false);
-  const { token } = useAuthStore();
-  if (token === undefined || token === "notok-en"){
-    redirect(AppRoute.OAuth);
-  }
+  const [shouldRedirect, setShouldRedirect] = useState(false);
+  const { token, refreshToken, setTokens } = useAuthStore();
 
+  const mutation = useMutation({
+        mutationFn: (token: string) => OAuthApi.retrieveToken(token)
+            .catch(async () => {
+                if (refreshToken !== undefined) {
+                    const res = await OAuthApi.renewToken(refreshToken);
+                    setTokens(res.access_token, res.refresh_token);
+                    return;
+                }
+                setShouldRedirect(true);
+                setTokens(undefined, undefined);
+            }),
+        retry: 0,
+  });
+
+  useEffect(() => {
+    if (shouldRedirect || token === undefined || token === "notok-en") {
+      redirect(AppRoute.OAuth);
+    }
+  }, [shouldRedirect, token]);
+
+  if (token !== undefined && !mutation.isError && !mutation.isPending){
+    mutation.mutate(token);
+  }
+  
   return (
       <div className="w-full flex flex-col">
         <div className="flex flex-row w-full flex-1 gap-4 py-6 px-6 border-b border-border justify-center">

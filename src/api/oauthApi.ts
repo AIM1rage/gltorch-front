@@ -1,17 +1,16 @@
 import axios, { AxiosInstance } from "axios";
 
-
-export type tokenResponse = {
+export type TokenResponse = {
     access_token: string;
     token_type: string;
     expires_in: number;
     refresh_token: string;
     created_at: number;
-  }
+};
   
   export interface GitlabOAuthApi {
-    changeCode(token: string): Promise<tokenResponse>;
-    renewToken(refresh_token: string): Promise<tokenResponse>;
+    changeCode(token: string): Promise<TokenResponse>;
+    renewToken(refresh_token: string): Promise<TokenResponse>;
   }
   
   class Api implements GitlabOAuthApi{
@@ -24,8 +23,8 @@ export type tokenResponse = {
       });
     }
   
-    async changeCode(code: string): Promise<tokenResponse> {
-      const res = await this.axios.post<tokenResponse>(
+    async changeCode(code: string): Promise<TokenResponse> {
+      const res = await this.axios.post<TokenResponse>(
         "/oauth/token",
         {
           "grant_type": "authorization_code",
@@ -37,8 +36,8 @@ export type tokenResponse = {
       return res.data;
     }
   
-    async renewToken(refresh_token: string): Promise<tokenResponse>{
-      const res = await this.axios.post<tokenResponse>(
+    async renewToken(refresh_token: string): Promise<TokenResponse>{
+      const res = await this.axios.post<TokenResponse>(
         "/oauth/token",
 
         {
@@ -49,6 +48,14 @@ export type tokenResponse = {
         },
       )
       return res.data;
+    }
+    
+    async retrieveToken(token: string): Promise<TokenResponse> {
+        const res = await this.axios.get<TokenResponse>(
+            `/oauth/token/info?access_token=${token}`
+        )
+        
+        return res.data;
     }
   }
 
