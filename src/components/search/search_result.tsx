@@ -16,7 +16,6 @@ import {
   GitGraph,
   AlertTriangle,
 } from "lucide-react";
-import sanitizeHtml from "sanitize-html";
 import { Link } from "@/components/ui/link";
 import {
   Tooltip,
@@ -177,6 +176,8 @@ const sanitizeRegex = (str: string) =>
 const removeGitLabFilters = (str: string) => {
   return str.replace(/(filename|path|extension):[^\s]+/g, "").trim();
 };
+const sanitizeHtml = (str: string) =>
+  str.replaceAll("<", "&lt;").replaceAll(">", "&gt;");
 
 function useFileContent({
   data,
@@ -199,14 +200,8 @@ function useFileContent({
       };
     }
 
-    const sanSearch = sanitizeHtml(removeGitLabFilters(searchFor), {
-      allowedTags: [],
-      allowedAttributes: {},
-    });
-    const sanData: string = sanitizeHtml(data, {
-      allowedTags: [],
-      allowedAttributes: {},
-    });
+    const sanSearch = sanitizeHtml(removeGitLabFilters(searchFor));
+    const sanData: string = sanitizeHtml(data);
 
     const lines = sanData.split("\n");
     const searchRegex = new RegExp(`(${sanitizeRegex(sanSearch)})`, "gi");
