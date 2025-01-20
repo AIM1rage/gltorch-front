@@ -37,13 +37,12 @@ function PageComponent() {
     const mutation = useMutation({
         mutationFn: (token: string) => OAuthApi.retrieveToken(token)
             .catch(async () => {
-                if (refreshToken !== undefined) {
+                if (refreshToken !== undefined && refreshToken !== "notok-en") {
                     const res = await OAuthApi.renewToken(refreshToken);
                     setTokens(res.access_token, res.refresh_token);
                     return;
                 }
                 setShouldRedirect(true);
-                setTokens(undefined, undefined);
             }),
         retry: 0,
     });
@@ -52,6 +51,7 @@ function PageComponent() {
 
     useEffect(() => {
         if (shouldRedirect || token === undefined || token === "notok-en") {
+            setTokens(undefined, undefined);
             redirect(AppRoute.OAuth);
         }
     }, [shouldRedirect, token]);
