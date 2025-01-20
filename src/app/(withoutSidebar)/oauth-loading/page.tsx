@@ -25,7 +25,7 @@ function AuthLoadingComponent() {
         mutation.mutate(queryParams.get("code")!);
     }
 
-    if (!mutation.isPending && !mutation.isError && token !== undefined && token !== "notok-en"){
+    if (!mutation.isError && token !== undefined && token !== "notok-en"){
         redirect(AppRoute.Home);
     }
 
