@@ -51,13 +51,13 @@ function PageComponent() {
     const isMutateCalled = useRef(false);
 
     useEffect(() => {
-        if (shouldRedirect || (token === undefined || token == "notok-en") && (refreshToken === undefined || refreshToken == "notok-en")) {
+        if (shouldRedirect || (token === undefined || token === "notok-en") && (refreshToken === undefined || refreshToken === "notok-en")) {
             setTokens(undefined, undefined);
             redirect(AppRoute.OAuth);
         }
     }, [shouldRedirect, token, refreshToken, setTokens]);
 
-    if ((token !== undefined && token !== "notok-en") && !mutation.isError && !mutation.isPending && !isMutateCalled.current) {
+    if (token !== undefined && !mutation.isError && !mutation.isPending && !isMutateCalled.current) {
         mutation.mutate(token);
         isMutateCalled.current = true;
     }
