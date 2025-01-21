@@ -37,27 +37,31 @@ function PageComponent() {
     const mutation = useMutation({
         mutationFn: (token: string) => OAuthApi.retrieveToken(token)
             .catch(async () => {
-                if (refreshToken !== undefined && refreshToken !== "notok-en") {
-                    const res = await OAuthApi.renewToken(refreshToken);
-                    setTokens(res.access_token, res.refresh_token);
-                    return;
+                try {
+                    if (refreshToken && refreshToken !== "notok-en") {
+                        const res = await OAuthApi.renewToken(refreshToken);
+                        setTokens(res.access_token, res.refresh_token);
+                        return;
+                    }
+                    setShouldRedirect(true);
                 }
-                setShouldRedirect(true);
-            })
-            .catch(() => setShouldRedirect(true)),
+                catch (e) {
+                    setShouldRedirect(true);
+                }
+            }),
         retry: 0,
     });
 
     const isMutateCalled = useRef(false);
 
     useEffect(() => {
-        if (shouldRedirect || (token === undefined || token === "notok-en") && (refreshToken === undefined || refreshToken === "notok-en")) {
+        if (shouldRedirect || (!token || token === "notok-en") && (!refreshToken || refreshToken === "notok-en")) {
             setTokens(undefined, undefined);
             redirect(AppRoute.OAuth);
         }
     }, [shouldRedirect, token, refreshToken, setTokens]);
 
-    if (token !== undefined && !mutation.isError && !mutation.isPending && !isMutateCalled.current) {
+    if (!token && !mutation.isError && !mutation.isPending && !isMutateCalled.current) {
         mutation.mutate(token);
         isMutateCalled.current = true;
     }

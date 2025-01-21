@@ -17,7 +17,7 @@ function AuthLoadingComponent() {
 
     const { token, setTokens } = useAuthStore();
     const mutation = useMutation({
-        mutationFn: (code: string) => OAuthApi.changeCode(code).then((res) => {if (res.access_token !== undefined) {setTokens(res.access_token, res.refresh_token)}}),
+        mutationFn: (code: string) => OAuthApi.changeCode(code).then((res) => {if (res.access_token) {setTokens(res.access_token, res.refresh_token)}}),
         retry: 0,
     })
 
