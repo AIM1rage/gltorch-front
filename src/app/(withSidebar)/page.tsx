@@ -11,7 +11,7 @@ import { useFilterStore } from "@/store/filters";
 import { useSearchStore } from "@/store/search";
 import { Group } from "@/types/group";
 import { User } from "@/types/user";
-import {useInfiniteQuery, useMutation} from "@tanstack/react-query";
+import { useInfiniteQuery } from "@tanstack/react-query";
 import { AlertOctagon, CheckCircle, Loader2, PanelLeft } from "lucide-react";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { Notice } from "@/components/ui/notice";
@@ -28,7 +28,8 @@ const Authorization = dynamic(() => import("@/components/auth/authorization"), {
 
 export default function Page() {
     const { toggleSidebar } = useSidebar();
-    const isMobile = useIsMobile();const [isSearching, setSearching] = useState(false);
+    const isMobile = useIsMobile();
+    const [isSearching, setSearching] = useState(false);
 
     return (
         <div className="w-full flex flex-col">

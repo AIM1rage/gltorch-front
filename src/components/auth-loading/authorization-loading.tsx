@@ -13,7 +13,10 @@ export default function AuthorizationLoading() {
 
     const { token, setTokens } = useAuthStore();
     const { mutate, isError, isPending, error } = useMutation({
-        mutationFn: (code: string) => OAuthApi.changeCode(code).then((res) => {if (res.access_token) {setTokens(res.access_token, res.refresh_token)}}),
+        mutationFn: (code: string) => OAuthApi.changeCode(code).then((res) => {
+            if (res.access_token) {
+                setTokens(res.access_token, res.refresh_token)
+            }}),
         retry: 0,
     })
 

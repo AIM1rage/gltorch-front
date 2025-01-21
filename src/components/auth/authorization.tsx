@@ -37,7 +37,7 @@ export default function Authorization() {
         }
     }, [shouldRedirect, token, refreshToken, setTokens]);
 
-    if (!token && !isError && !isPending && !isMutateCalled.current) {
+    if (token && !isError && !isPending && !isMutateCalled.current) {
         mutate(token);
         isMutateCalled.current = true;
     }
