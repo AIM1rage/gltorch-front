@@ -47,7 +47,7 @@ import { Link } from "../ui/link";
 export function UserDropdown() {
   const [tokenInput, setTokenInput] = useState("");
   const [isOpen, setIsOpen] = useState(false);
-  const { token, setToken } = useAuthStore();
+  const { token, setTokens } = useAuthStore();
 
   const {
     data: user,
@@ -60,13 +60,13 @@ export function UserDropdown() {
   });
 
   const handleSaveToken = () => {
-    setToken(tokenInput);
+    setTokens(tokenInput);
     setTokenInput("");
     setIsOpen(false);
   };
 
   const handleSignOut = () => {
-    setToken(undefined);
+    setTokens(undefined, undefined);
     setIsOpen(false);
   };
 

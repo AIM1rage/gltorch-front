@@ -40,12 +40,12 @@ function SmallScreenNotice() {
 }
 
 function AccessTokenNotice() {
-  const { setToken } = useAuthStore();
+  const { setTokens } = useAuthStore();
   const [tokenInput, setTokenInput] = useState("");
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    setToken(tokenInput);
+    setTokens(tokenInput);
   };
 
   return (

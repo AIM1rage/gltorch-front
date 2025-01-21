@@ -17,33 +17,39 @@ import React, { useCallback, useEffect, useRef, useState } from "react";
 import { Notice } from "@/components/ui/notice";
 import { motion } from "framer-motion";
 
+
 const Notices = dynamic(() => import("@/components/notices/notices"), {
   ssr: false,
 });
 
-export default function Page() {
-  const { toggleSidebar } = useSidebar();
-  const isMobile = useIsMobile();
-  const [isSearching, setSearching] = useState(false);
+const Authorization = dynamic(() => import("@/components/auth/authorization"), {
+    ssr: false,
+})
 
-  return (
-    <div className="w-full flex flex-col">
-      <div className="flex flex-row w-full flex-1 gap-4 py-6 px-6 border-b border-border justify-center">
-        <Button
-          className={cn(!isMobile && "hidden")}
-          variant="outline"
-          onClick={toggleSidebar}
-        >
-          <PanelLeft />
-        </Button>
-        <SearchBar className="w-full" isSearching={isSearching} />
-      </div>
-      <div className="pr-8 pl-6 py-6 flex flex-col gap-8">
-        <Notices />
-        <SRMemo setSearching={setSearching} />
-      </div>
-    </div>
-  );
+export default function Page() {
+    const { toggleSidebar } = useSidebar();
+    const isMobile = useIsMobile();
+    const [isSearching, setSearching] = useState(false);
+
+    return (
+        <div className="w-full flex flex-col">
+            <div className="flex flex-row w-full flex-1 gap-4 py-6 px-6 border-b border-border justify-center">
+                <Authorization/>
+                <Button
+                    className={cn(!isMobile && "hidden")}
+                    variant="outline"
+                    onClick={toggleSidebar}
+                >
+                    <PanelLeft />
+                </Button>
+                <SearchBar className="w-full" isSearching={isSearching} />
+            </div>
+            <div className="pr-8 pl-6 py-6 flex flex-col gap-8">
+                <Notices />
+                <SRMemo setSearching={setSearching} />
+            </div>
+        </div>
+    );
 }
 
 const SRMemo = React.memo(SearchResults, () => true);
