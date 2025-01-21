@@ -16,78 +16,39 @@ import { AlertOctagon, CheckCircle, Loader2, PanelLeft } from "lucide-react";
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { Notice } from "@/components/ui/notice";
 import { motion } from "framer-motion";
-import useAuthStore from "@/store/auth";
-import { redirect } from "next/navigation";
-import { AppRoute } from "@/constants/approute";
-import NoSsr from "@/components/noSsr";
-import {OAuthApi} from "@/api/oauthApi";
 
 
 const Notices = dynamic(() => import("@/components/notices/notices"), {
   ssr: false,
 });
 
-function PageComponent() {
-    const { toggleSidebar } = useSidebar();
-    const isMobile = useIsMobile();
-    const [isSearching, setSearching] = useState(false);
-    const [shouldRedirect, setShouldRedirect] = useState(false);
-    const { token, refreshToken, setTokens } = useAuthStore();
-
-    const mutation = useMutation({
-        mutationFn: (token: string) => OAuthApi.retrieveToken(token)
-            .catch(async () => {
-                try {
-                    if (refreshToken && refreshToken !== "notok-en") {
-                        const res = await OAuthApi.renewToken(refreshToken);
-                        setTokens(res.access_token, res.refresh_token);
-                        return;
-                    }
-                    setShouldRedirect(true);
-                }
-                catch (e) {
-                    setShouldRedirect(true);
-                }
-            }),
-        retry: 0,
-    });
-
-    const isMutateCalled = useRef(false);
-
-    useEffect(() => {
-        if (shouldRedirect || (!token || token === "notok-en") && (!refreshToken || refreshToken === "notok-en")) {
-            setTokens(undefined, undefined);
-            redirect(AppRoute.OAuth);
-        }
-    }, [shouldRedirect, token, refreshToken, setTokens]);
-
-    if (!token && !mutation.isError && !mutation.isPending && !isMutateCalled.current) {
-        mutation.mutate(token);
-        isMutateCalled.current = true;
-    }
-  
-  return (
-      <div className="w-full flex flex-col">
-        <div className="flex flex-row w-full flex-1 gap-4 py-6 px-6 border-b border-border justify-center">
-          <Button
-              className={cn(!isMobile && "hidden")}
-              variant="outline"
-              onClick={toggleSidebar}
-          >
-            <PanelLeft />
-          </Button>
-          <SearchBar className="w-full" isSearching={isSearching} />
-        </div>
-        <div className="pr-8 pl-6 py-6 flex flex-col gap-8">
-          <Notices />
-          <SRMemo setSearching={setSearching} />
-        </div>
-      </div>
-  );
-}
+const Authorization = dynamic(() => import("@/components/auth/authorization"), {
+    ssr: false,
+})
 
 export default function Page() {
-  return <NoSsr><PageComponent/></NoSsr>
+    const { toggleSidebar } = useSidebar();
+    const isMobile = useIsMobile();const [isSearching, setSearching] = useState(false);
+
+    return (
+        <div className="w-full flex flex-col">
+            <div className="flex flex-row w-full flex-1 gap-4 py-6 px-6 border-b border-border justify-center">
+                <Authorization/>
+                <Button
+                    className={cn(!isMobile && "hidden")}
+                    variant="outline"
+                    onClick={toggleSidebar}
+                >
+                    <PanelLeft />
+                </Button>
+                <SearchBar className="w-full" isSearching={isSearching} />
+            </div>
+            <div className="pr-8 pl-6 py-6 flex flex-col gap-8">
+                <Notices />
+                <SRMemo setSearching={setSearching} />
+            </div>
+        </div>
+    );
 }
 
 const SRMemo = React.memo(SearchResults, () => true);

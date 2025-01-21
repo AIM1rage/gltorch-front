@@ -11,6 +11,7 @@ export type TokenResponse = {
   export interface GitlabOAuthApi {
     changeCode(token: string): Promise<TokenResponse>;
     renewToken(refresh_token: string): Promise<TokenResponse>;
+    retrieveToken(token: string): Promise<TokenResponse>;
   }
   
   class Api implements GitlabOAuthApi{
